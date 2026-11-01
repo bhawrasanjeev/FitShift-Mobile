@@ -1,97 +1,146 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# FitShift Android Application (React Native)
 
-# Getting Started
+> **Official Mobile Client for FitShift**  
+> *Routine-first, budget-realistic fitness and nutrition built for real Indian lifestyles.*
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 🌟 Overview
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+FitShift Mobile is a production-quality Android application developed using **React Native 0.88** and **TypeScript**. It connects directly to the existing FitShift Express backend and dataset engine, translating deterministic nutrition algorithms and calisthenics training splits into a polished mobile experience.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Core Principles
+- **"Planning, Not Tracking"**: No fake calorie counters, food weight tracking, or streak anxiety.
+- **Zero Login Walls**: Instant offline storage with local caching via `@react-native-async-storage/async-storage`.
+- **Authentic Indian Grocery Economics**: Whole-food optimization (Chana Sattu, Yellow Moong, Kala Chana, Curd, Paneer) within daily budget constraints.
+- **Deterministic Workouts**: Split routines for both Home (calisthenics/bands) and Commercial Gym with real CDN exercise demonstrations (`free-exercise-db`).
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## 📱 Application Architecture & Features
+
+### 1. Welcome & Onboarding Wizard
+- **Brand Hero:** FitShift Dumbbell Engine logo mark with emerald brand styling (`#15803D`).
+- **7-Step Onboarding:**
+  1. Personal Basics (Age, Gender, Height, Weight, Goal)
+  2. Daily Rhythm (Occupation, Transit schedule, Sleep hours, Activity level)
+  3. Training Setup (Home vs. Gym, Duration, Frequency, Equipment)
+  4. Food Preferences (Diet type, Cooking setup, Meals/day, Indian cuisine style)
+  5. Daily Budget (Ultra-Budget <₹45, Budget ₹45–₹80, Moderate ₹80–₹150, Custom)
+  6. Supplement Philosophy (Food-first default, Open, Unsure)
+  7. Review & Summary with step-editing anchors
+
+### 2. Dashboard & Navigation
+- **Native Android Bottom Navigation:**
+  - 🏠 **Overview:** Daily calorie target, protein minimum, BMR/TDEE breakdown, today's workout preview, and today's meal preview.
+  - 🏋️ **Workout:** 7-day split rotation, interactive exercise cards, and rest day guidance.
+  - 🥗 **Diet:** Daily Indian meal courses, macro allocation, and grocery economics.
+  - ⏱️ **Schedule:** 24-hour chronological timeline anchored to transit and work blocks.
+  - 🤖 **AI Coach:** Context-aware fitness assistance connecting to `/api/ai/chat`.
+- **Recovery & Editing Overlays:**
+  - **Late / Tired Today:** 15-minute gentle mobility routine and sleep shift advice.
+  - **Inline Edit Plan:** Fast adjustments to environment, duration, weekly frequency, diet, and budget.
+
+### 3. Workout & Exercise Module
+- **7-Day Split Rotation:** Monday through Sunday tabs with volume badges (`5 Ex`) and rest indicators.
+- **Home vs. Gym Toggle:** Dynamic environment switching with live backend regeneration.
+- **CDN Exercise Cards:** Visual demonstration thumbnails loaded from `free-exercise-db`.
+- **Exercise Details Modal:** Step-by-step movement instructions, tempo guide, and common form mistakes caution box.
+- **1-Tap Exercise Alternative Swapping:** Biomechanically matched substitution preserving volume and target muscle load.
+- **Inter-Set Rest Countdown Timer:** Digital countdown with presets (`30s`, `45s`, `60s`, `90s`, `120s`), +/-15s adjustments, and completion vibration.
+
+---
+
+## 🛠️ Project Structure
+
+```text
+FitShift-Mobile/
+├── android/                         # Android native project (Gradle, Manifest, Resources)
+├── src/
+│   ├── assets/                      # Brand assets & icons
+│   ├── components/
+│   │   ├── common/                  # Design system primitives (Button, Card, Badge, etc.)
+│   │   ├── fitness/                 # Domain fitness components (ExerciseCard, MacroRing, etc.)
+│   │   ├── interactive/             # BottomSheet, Modal, DaySelector, EditPlanModal, etc.
+│   │   ├── onboarding/              # 7-Step Mobile Wizard steps & controller
+│   │   └── workout/                 # Workout module (EnvironmentToggle, RestTimer, Modals)
+│   ├── constants/                   # Initial states and system constants
+│   ├── context/                     # PlanContext and ThemeContext
+│   ├── navigation/                  # RootNavigator and MainTabNavigator
+│   ├── screens/                     # Primary screens (Welcome, Dashboard tabs, Showcases)
+│   ├── services/
+│   │   ├── api/                     # Dynamic API clients, health, nutrition, diet, workout, AI
+│   │   └── storage/                 # AsyncStorage plan persistence
+│   ├── theme/                       # Design tokens (colors, typography, spacing, shadows)
+│   ├── types/                       # Strict TypeScript models
+│   └── utils/                       # Schedule and formatting helpers
+├── App.tsx                          # App root bootstrap
+├── package.json
+└── tsconfig.json
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## 🚀 Getting Started
 
-### Android
+### Prerequisites
+- Node.js (v18+)
+- Android Studio & Android SDK (API 30+)
+- JDK 17+
+- Connected Android device or running Android Emulator
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/bhawrasanjeev/FitShift-Mobile.git
+   cd FitShift-Mobile
+   ```
 
-### iOS
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3. **Backend Service Setup:**
+   Ensure the existing FitShift Express backend is running on port `5001` (or `5000`):
+   ```bash
+   # From the FitShift server directory
+   npm run dev
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+4. **Start Metro Bundler:**
+   ```bash
+   npm start
+   ```
 
-```sh
-bundle install
-```
+5. **Build and Run on Android:**
+   ```bash
+   npm run android
+   ```
 
-Then, and every time you update your native dependencies, run:
+### Connecting to the Backend
+- **Android Emulator:** Automatically uses `http://10.0.2.2:5001`.
+- **Physical Device:** Update `.env` or use the in-app Developer API Console to configure your computer's local Wi-Fi IP address (e.g. `http://192.168.1.X:5001`).
 
-```sh
-bundle exec pod install
-```
+---
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## 🧪 Quality & Verification Commands
 
-```sh
-# Using npm
-npm run ios
+- **TypeScript check:**
+  ```bash
+  npx tsc --noEmit
+  ```
+- **ESLint check:**
+  ```bash
+  npm run lint
+  ```
+- **Android Debug APK build:**
+  ```bash
+  cd android && ./gradlew assembleDebug
+  ```
 
-# OR using Yarn
-yarn ios
-```
+---
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 📄 License
+This project is proprietary and confidential. Developed as part of the FitShift fitness & wellness platform.
