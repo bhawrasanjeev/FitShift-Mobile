@@ -92,7 +92,8 @@
 - `src/context/PlanContext.tsx`: Added `updateProfileSection()`, conditional regeneration logic, and `clearAllData()`.
 - `src/navigation/RootNavigator.tsx`: Added `'profile'` and `'settings'` routes with hardware back button support.
 - `src/navigation/MainTabNavigator.tsx`: Wired `onOpenProfile` callback to `OverviewScreen`.
-- `src/screens/Dashboard/OverviewScreen.tsx`: Added user avatar button and profile banner link.
+- `src/screens/Dashboard/OverviewScreen.tsx`: Added user avatar button, removed redundant header edit/reset/late buttons.
+- `src/screens/WelcomeScreen.tsx`: Modern redesign: removed "Engine" badge, "Android Edition" subtitle, redundant blueprint sample cards, and long marketing cards. Clean, minimal hero card with vector highlights.
 - `DEVELOPMENT_PROGRESS.md`: Updated Phase 9 status and documentation.
 
 ### Testing & Verification

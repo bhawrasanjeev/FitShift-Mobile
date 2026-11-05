@@ -15,6 +15,7 @@ import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
 import { borderRadius } from '../theme/borderRadius';
+import { shadows } from '../theme/shadows';
 import { usePlan } from '../context/PlanContext';
 
 export interface WelcomeScreenProps {
@@ -33,11 +34,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const { hasPlan, plan } = usePlan();
   const insets = useSafeAreaInsets();
 
-  const trustPoints: { iconName: IconName; title: string; desc: string }[] = [
-    { iconName: 'shield', title: 'No login required', desc: 'Planning, not tracking. Zero account wall.' },
-    { iconName: 'leaf', title: 'Indian grocery economics', desc: 'Sattu, Kala Chana, Moong, Paneer, Curd.' },
-    { iconName: 'dumbbell', title: 'Home & Gym ready', desc: 'Strict bodyweight to full commercial gym.' },
-    { iconName: 'clock', title: 'Real-world schedules', desc: 'Syncs to office commute & shift timings.' },
+  const highlights: { icon: IconName; label: string }[] = [
+    { icon: 'shield', label: 'No Login Wall' },
+    { icon: 'utensils', label: 'Desi Staples' },
+    { icon: 'clock', label: 'Schedule Synced' },
   ];
 
   return (
@@ -45,146 +45,125 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       style={styles.container}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingTop: Math.max(insets.top, spacing.xl) },
+        {
+          paddingTop: Math.max(insets.top + spacing.lg, spacing['3xl']),
+          paddingBottom: Math.max(insets.bottom + spacing.xl, spacing['3xl']),
+        },
       ]}
       showsVerticalScrollIndicator={false}
+      bounces={false}
     >
-      {/* Brand Hero Header */}
-      <View style={styles.heroSection}>
-        {/* Tagline Badge */}
-        <View style={styles.taglineBadge}>
-          <Icon name="sparkles" size={13} color={colors.primaryDark} />
-          <Text style={styles.taglineText}>ROUTINE-FIRST, BUDGET-REALISTIC FITNESS</Text>
+      {/* Brand Identity Hero */}
+      <View style={styles.brandHero}>
+        <View style={styles.logoContainer}>
+          <Logo size={56} />
         </View>
 
-        {/* Brand Logo & Name */}
-        <View style={styles.brandRow}>
-          <Logo size={46} />
-          <View>
-            <View style={styles.titleWithBadge}>
-              <Text style={styles.brandTitle}>FitShift</Text>
-              <Badge label="Engine" variant="accent" size="sm" />
+        <Text style={styles.brandTitle}>FitShift</Text>
+        <Text style={styles.brandTagline}>Routine-First Fitness • Indian Nutrition</Text>
+      </View>
+
+      {/* Main Value Proposition Card */}
+      <View style={styles.heroCard}>
+        <View style={styles.headlineWrapper}>
+          <Text style={styles.headline}>
+            Fitness that <Text style={styles.headlineAccent}>fits your life</Text>.
+          </Text>
+          <Text style={styles.subheadline}>
+            Personalized workouts and budget-realistic Indian meal plans, tailored precisely to your schedule, kitchen resources, and goals.
+          </Text>
+        </View>
+
+        {/* Minimalist Feature Chips */}
+        <View style={styles.highlightsRow}>
+          {highlights.map((item, idx) => (
+            <View key={idx} style={styles.highlightChip}>
+              <Icon name={item.icon} size={13} color={colors.primaryDark} />
+              <Text style={styles.highlightText}>{item.label}</Text>
             </View>
-            <Text style={styles.brandSubtitle}>Android Edition</Text>
-          </View>
+          ))}
         </View>
 
-        {/* Main Headline */}
-        <Text style={styles.headline}>
-          Fitness that <Text style={styles.headlineEmerald}>fits your life</Text>.
-        </Text>
-
-        {/* Supporting Copy */}
-        <Text style={styles.subheadline}>
-          Personalized workouts, Indian-food-based nutrition and realistic daily routines, built around your schedule, resources and budget.
-        </Text>
-
-        {/* Active Plan Shortcut Banner (if plan is cached) */}
+        {/* Conditional Plan Section */}
         {hasPlan && plan ? (
-          <View style={styles.activePlanBanner}>
+          <View style={styles.activePlanCard}>
             <View style={styles.activePlanHeader}>
               <View style={styles.activePlanTitleRow}>
-                <Icon name="check-circle" size={18} color={colors.primary} />
-                <Text style={styles.activePlanTitle}>Active Plan Ready</Text>
+                <Icon name="check-circle" size={16} color={colors.primaryDark} />
+                <Text style={styles.activePlanTitle}>Active Routine Available</Text>
               </View>
               <Badge
-                label={`₹${plan.userProfile.budget.dailyBudgetRupees}/day`}
+                label={`₹${plan.userProfile?.budget?.dailyBudgetRupees || 65}/day`}
                 variant="accent"
                 size="sm"
               />
             </View>
 
             <Text style={styles.activePlanSummary}>
-              {plan.userProfile.personal.goal.replace('_', ' ').toUpperCase()} •{' '}
-              {plan.userProfile.training.environment === 'home' ? 'Home Workouts' : 'Gym'} •{' '}
-              {plan.nutrition.calorieTarget} kcal • {plan.nutrition.proteinTargetGrams}g Protein
+              {(plan.userProfile?.personal?.goal || 'FITNESS').replace('_', ' ').toUpperCase()} •{' '}
+              {plan.userProfile?.training?.environment === 'home' ? 'Home Workouts' : 'Gym'} •{' '}
+              {plan.nutrition?.calorieTarget} kcal • {plan.nutrition?.proteinTargetGrams}g Protein
             </Text>
 
-            <View style={styles.activePlanButtons}>
+            <View style={styles.actionButtons}>
               <Button
                 title="View My Active Plan"
                 variant="primary"
-                size="md"
+                size="lg"
                 onPress={onViewActivePlan}
-                style={styles.viewPlanButton}
+                style={styles.primaryBtn}
               />
               <Button
                 title="Create New Plan"
                 variant="outline"
                 size="md"
                 onPress={onStartOnboarding}
-                style={styles.newPlanButton}
+                style={styles.secondaryBtn}
               />
             </View>
           </View>
         ) : (
-          /* Primary CTA Action */
-          <View style={styles.ctaSection}>
+          <View style={styles.ctaWrapper}>
             <Button
               title="Create My Plan"
               variant="primary"
               size="lg"
               onPress={onStartOnboarding}
-              style={styles.primaryCta}
+              style={styles.primaryBtn}
             />
             <Text style={styles.ctaNote}>
-              Takes under 2 minutes • No account or credit card needed
+              Takes under 2 minutes • No account or registration needed
             </Text>
           </View>
         )}
       </View>
 
-      {/* Trust & Philosophy Pillars */}
-      <View style={styles.pillarsSection}>
-        <Text style={styles.sectionHeaderTitle}>DESIGNED FOR REAL ROUTINES</Text>
-        <View style={styles.pillarsGrid}>
-          {trustPoints.map((point, index) => (
-            <View key={index} style={styles.pillarCard}>
-              <View style={styles.pillarIconContainer}>
-                <Icon name={point.iconName} size={20} color={colors.primary} />
-              </View>
-              <View style={styles.pillarTextCol}>
-                <Text style={styles.pillarTitle}>{point.title}</Text>
-                <Text style={styles.pillarDesc}>{point.desc}</Text>
-              </View>
-            </View>
-          ))}
+      {/* Developer / Dev Navigation (if props provided) */}
+      {(onOpenShowcase || onOpenApiConsole) && (
+        <View style={styles.devToolsRow}>
+          {onOpenShowcase && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onOpenShowcase}
+              style={styles.devLink}
+            >
+              <Text style={styles.devLinkText}>Design System</Text>
+            </TouchableOpacity>
+          )}
+          {onOpenShowcase && onOpenApiConsole && (
+            <Text style={styles.devDot}>•</Text>
+          )}
+          {onOpenApiConsole && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onOpenApiConsole}
+              style={styles.devLink}
+            >
+              <Text style={styles.devLinkText}>API Console</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      </View>
-
-      {/* Live Algorithm Preview Card */}
-      <View style={styles.previewSection}>
-        <View style={styles.previewCard}>
-          <View style={styles.previewHeader}>
-            <Text style={styles.previewHeaderTitle}>SAMPLE GENERATED BLUEPRINT</Text>
-            <Badge label="Home • 45m • Pure Veg • ₹65/day" variant="accent" size="sm" />
-          </View>
-
-          {/* Workout Sample Row */}
-          <View style={styles.previewItem}>
-            <View style={styles.previewItemHeader}>
-              <Text style={styles.previewItemCategory}>PUSH ROUTINE</Text>
-              <Text style={styles.previewItemRest}>60s rest</Text>
-            </View>
-            <Text style={styles.previewItemName}>Controlled Tempo Push-Ups</Text>
-            <Text style={styles.previewItemSub}>
-              3 sets × 12–15 reps • Living room floor & mat
-            </Text>
-          </View>
-
-          {/* Diet Sample Row */}
-          <View style={styles.previewItem}>
-            <View style={styles.previewItemHeader}>
-              <Text style={styles.previewItemCategoryDiet}>HIGH-PROTEIN BREAKFAST</Text>
-              <Text style={styles.previewItemCost}>₹18 • 21g Pro</Text>
-            </View>
-            <Text style={styles.previewItemName}>Chana Sattu Buttermilk & Moong Sprouts</Text>
-            <Text style={styles.previewItemSub}>
-              40g Sattu, 200ml Curd Chaas, 50g Sprouted Moong
-            </Text>
-          </View>
-        </View>
-      </View>
+      )}
     </ScrollView>
   );
 };
@@ -195,97 +174,116 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   contentContainer: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing['5xl'],
-    gap: spacing.xl,
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xl,
+    gap: spacing.xxl,
   },
-  heroSection: {
-    alignItems: 'center',
-    textAlign: 'center',
-    gap: spacing.md,
-  },
-  taglineBadge: {
-    flexDirection: 'row',
+  brandHero: {
     alignItems: 'center',
     gap: spacing.xs,
+  },
+  logoContainer: {
+    marginBottom: spacing.xs,
+    ...shadows.sm,
+  },
+  brandTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    letterSpacing: -0.8,
+  },
+  brandTagline: {
+    ...typography.caption,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    letterSpacing: 0.3,
+  },
+  heroCard: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: borderRadius['2xl'],
+    padding: spacing.xl,
+    gap: spacing.xl,
+    ...shadows.sm,
+  },
+  headlineWrapper: {
+    gap: spacing.sm,
+    alignItems: 'center',
+  },
+  headline: {
+    ...typography.h1,
+    fontSize: 26,
+    lineHeight: 32,
+    color: colors.textPrimary,
+    textAlign: 'center',
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  headlineAccent: {
+    color: colors.primaryDark,
+  },
+  subheadline: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: spacing.xs,
+  },
+  highlightsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.xs,
+  },
+  highlightChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     backgroundColor: colors.primaryLight,
     borderColor: colors.accentBorder,
     borderWidth: 1,
     borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  taglineText: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    letterSpacing: 0.6,
-    fontSize: 10,
-  },
-  brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.xs,
-  },
-  titleWithBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  brandTitle: {
-    ...typography.h2,
-    color: colors.textPrimary,
-    fontWeight: '800',
-  },
-  brandSubtitle: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  headline: {
-    ...typography.h1,
-    fontSize: 32,
-    lineHeight: 38,
-    color: colors.textPrimary,
-    textAlign: 'center',
-    marginTop: spacing.xs,
-  },
-  headlineEmerald: {
-    color: colors.primary,
-    textDecorationLine: 'underline',
-  },
-  subheadline: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
+    paddingVertical: 5,
     paddingHorizontal: spacing.sm,
   },
-  ctaSection: {
+  highlightText: {
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.primaryDark,
+  },
+  ctaWrapper: {
     width: '100%',
     alignItems: 'center',
-    gap: spacing.xs,
-    marginTop: spacing.sm,
+    gap: spacing.sm,
+    paddingTop: spacing.xs,
   },
-  primaryCta: {
+  primaryBtn: {
+    width: '100%',
+  },
+  secondaryBtn: {
     width: '100%',
   },
   ctaNote: {
     ...typography.caption,
     color: colors.textMuted,
     fontSize: 11,
+    textAlign: 'center',
   },
-  activePlanBanner: {
+  activePlanCard: {
     width: '100%',
-    backgroundColor: colors.surface,
-    borderColor: colors.primary,
-    borderWidth: 1.5,
-    borderRadius: borderRadius['2xl'],
-    padding: spacing.lg,
+    backgroundColor: colors.surfaceSubtle,
+    borderColor: colors.accentBorder,
+    borderWidth: 1,
+    borderRadius: borderRadius.xl,
+    padding: spacing.md,
     gap: spacing.sm,
-    marginTop: spacing.sm,
   },
   activePlanHeader: {
     flexDirection: 'row',
@@ -297,144 +295,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  activePlanIcon: {
-    fontSize: 16,
-  },
   activePlanTitle: {
-    ...typography.body,
+    ...typography.bodySmall,
     fontWeight: '700',
     color: colors.primaryDark,
   },
   activePlanSummary: {
     ...typography.caption,
     color: colors.textSecondary,
-    lineHeight: 18,
+    lineHeight: 16,
+    fontSize: 11,
   },
-  activePlanButtons: {
-    flexDirection: 'row',
-    gap: spacing.sm,
+  actionButtons: {
+    gap: spacing.xs,
     marginTop: spacing.xs,
   },
-  viewPlanButton: {
-    flex: 2,
-  },
-  newPlanButton: {
-    flex: 1,
-  },
-  pillarsSection: {
-    gap: spacing.md,
-  },
-  sectionHeaderTitle: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
-  pillarsGrid: {
-    gap: spacing.sm,
-  },
-  pillarCard: {
+  devToolsRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-  },
-  pillarIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  pillarTextCol: {
-    flex: 1,
-    gap: 2,
-  },
-  pillarTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  pillarDesc: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    lineHeight: 18,
-  },
-  previewSection: {
     gap: spacing.sm,
   },
-  previewCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: borderRadius['2xl'],
-    padding: spacing.md,
-    gap: spacing.sm,
+  devLink: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
   },
-  previewHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: spacing.sm,
-    borderBottomColor: colors.borderSubtle,
-    borderBottomWidth: 1,
-  },
-  previewHeaderTitle: {
+  devLinkText: {
     ...typography.caption,
-    fontSize: 10,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    letterSpacing: 0.6,
+    color: colors.textMuted,
+    fontSize: 11,
   },
-  previewItem: {
-    backgroundColor: colors.backgroundSecondary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.sm,
-    gap: 2,
-  },
-  previewItemHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  previewItemCategory: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    fontSize: 10,
-  },
-  previewItemCategoryDiet: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.warning,
-    fontSize: 10,
-  },
-  previewItemRest: {
-    ...typography.caption,
-    fontWeight: '600',
-    color: colors.primaryDark,
-    fontSize: 10,
-  },
-  previewItemCost: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.primaryDark,
-    fontSize: 10,
-  },
-  previewItemName: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  previewItemSub: {
-    ...typography.caption,
-    color: colors.textSecondary,
+  devDot: {
+    color: colors.border,
     fontSize: 11,
   },
 });
