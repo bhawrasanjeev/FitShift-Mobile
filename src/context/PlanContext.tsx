@@ -7,6 +7,11 @@ import {
   WorkoutPlanData,
   TrainingEnvironment,
   Exercise,
+  MealAlternative,
+  MealItem,
+  GroceryEntry,
+  PersonalBasics,
+  DailyRhythm,
 } from '../types';
 import { initialEmptyOnboardingData } from '../constants/initialState';
 import { planStorage } from '../services/storage/planStorage';
@@ -15,6 +20,21 @@ import { dietService } from '../services/api/dietService';
 import { workoutService } from '../services/api/workoutService';
 
 export type MainNavTab = 'overview' | 'workout' | 'diet' | 'schedule' | 'ai';
+
+export type ProfileSectionKey =
+  | 'personal'
+  | 'rhythm'
+  | 'training'
+  | 'food'
+  | 'budget'
+  | 'supplements';
+
+export interface SectionUpdateResult {
+  needsRegeneration: boolean;
+  regenerated: boolean;
+  success: boolean;
+  message?: string;
+}
 
 interface PlanContextType {
   // Plan and Profile Data
@@ -33,11 +53,18 @@ interface PlanContextType {
 
   // Actions
   updateUserProfile: (updater: (prev: OnboardingData) => OnboardingData) => void;
+  updateProfileSection: (
+    section: ProfileSectionKey,
+    updatedSectionData: any
+  ) => Promise<SectionUpdateResult>;
   generatePlan: (customData?: OnboardingData) => Promise<boolean>;
   regeneratePlan: (updatedData: OnboardingData) => Promise<boolean>;
   switchWorkoutEnvironment: (env: TrainingEnvironment) => Promise<boolean>;
   swapExercise: (dayNumber: number, exerciseId: string) => Promise<boolean>;
+  swapMeal: (mealId: string, alternative: MealAlternative) => Promise<boolean>;
+  updateGroceryChecklist: (itemId: string, checked: boolean) => Promise<void>;
   resetPlan: () => Promise<void>;
+  clearAllData: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -288,9 +315,377 @@ export const PlanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const swapMeal = async (mealId: string, alternative: MealAlternative): Promise<boolean> => {
+    if (!plan || !plan.diet || !plan.diet.meals) return false;
+
+    try {
+      const targetMeal = plan.diet.meals.find((m) => m.id === mealId);
+      if (!targetMeal) return false;
+
+      // Create reversed alternative for current meal so the swap can be undone
+      const reversedAlternative: MealAlternative = {
+        id: `alt-${targetMeal.id}-${Date.now()}`,
+        name: targetMeal.title,
+        description: `Previous planned selection: ${targetMeal.items.map((i) => i.name).join(', ')}`,
+        approxProteinG: targetMeal.totalProteinGrams,
+        estCalories: targetMeal.estCalories || Math.round(targetMeal.totalProteinGrams * 16),
+        approxCostRupees: targetMeal.estimatedCost,
+        prepTimeMinutes: targetMeal.prepTimeMinutes || 15,
+        cookingTip: targetMeal.cookingTip,
+        ingredients: targetMeal.items.map((i) => `${i.name} (${i.quantityGrams}g)`),
+        items: targetMeal.items,
+      };
+
+      const updatedAlternatives = [
+        reversedAlternative,
+        ...(targetMeal.alternatives || []).filter((a) => a.id !== alternative.id),
+      ];
+
+      const updatedMeals = plan.diet.meals.map((meal) => {
+        if (meal.id !== mealId) return meal;
+
+        const updatedItems: MealItem[] =
+          alternative.items && alternative.items.length > 0
+            ? alternative.items
+            : meal.items;
+
+        const newProtein =
+          alternative.approxProteinG ||
+          updatedItems.reduce((sum, i) => sum + i.proteinGrams, 0);
+
+        const newCost =
+          alternative.approxCostRupees ||
+          updatedItems.reduce((sum, i) => sum + i.estimatedCost, 0);
+
+        return {
+          ...meal,
+          title: alternative.name,
+          totalProteinGrams: newProtein,
+          estimatedCost: newCost,
+          estCalories: alternative.estCalories || meal.estCalories,
+          prepTimeMinutes: alternative.prepTimeMinutes || meal.prepTimeMinutes,
+          cookingTip: alternative.cookingTip || meal.cookingTip,
+          items: updatedItems,
+          alternatives: updatedAlternatives,
+        };
+      });
+
+      // Reconcile grocery list directly from updated meals
+      const previousCheckedMap = new Map<string, boolean>();
+      (plan.diet.groceryList || []).forEach((item) => {
+        previousCheckedMap.set(item.name.toLowerCase().trim(), Boolean(item.checked));
+      });
+
+      const totals = new Map<
+        string,
+        { name: string; category: string; dailyGrams: number; dailyCost: number }
+      >();
+
+      updatedMeals.forEach((meal) => {
+        meal.items.forEach((item) => {
+          const cleanName = item.name.replace(/\s*\([^)]*\)/g, '').trim();
+          const key = cleanName.toLowerCase();
+          if (!totals.has(key)) {
+            totals.set(key, {
+              name: cleanName,
+              category: item.category || 'Pantry Staples',
+              dailyGrams: 0,
+              dailyCost: 0,
+            });
+          }
+          const entry = totals.get(key)!;
+          entry.dailyGrams += item.quantityGrams;
+          entry.dailyCost += item.estimatedCost;
+        });
+      });
+
+      const updatedGroceryList: GroceryEntry[] = Array.from(totals.values()).map((entry, idx) => {
+        const weeklyGrams = entry.dailyGrams * 7;
+        const weeklyCost = Math.round(entry.dailyCost * 7);
+
+        let quantityLabel: string;
+        if (entry.name.toLowerCase().includes('egg')) {
+          const eggsPerDay = Math.max(1, Math.round(entry.dailyGrams / 50));
+          quantityLabel = `${eggsPerDay * 7} eggs (~${Math.round((weeklyGrams / 1000) * 10) / 10} kg)`;
+        } else if (weeklyGrams >= 1000) {
+          quantityLabel = `${(weeklyGrams / 1000).toFixed(1)} kg`;
+        } else {
+          quantityLabel = `${weeklyGrams} g`;
+        }
+
+        const key = entry.name.toLowerCase().trim();
+        const wasChecked = previousCheckedMap.get(key) || false;
+
+        return {
+          id: `grocery-${idx + 1}`,
+          name: entry.name,
+          category: entry.category,
+          weeklyQuantity: quantityLabel,
+          weeklyGrams,
+          estimatedWeeklyCost: weeklyCost,
+          estimatedDailyCost: Math.round(entry.dailyCost),
+          checked: wasChecked,
+        };
+      });
+
+      const totalDailyCost = updatedMeals.reduce((sum, m) => sum + m.estimatedCost, 0);
+      const totalProtein = updatedMeals.reduce((sum, m) => sum + m.totalProteinGrams, 0);
+
+      const updatedPlan: GeneratedPlan = {
+        ...plan,
+        diet: {
+          ...plan.diet,
+          meals: updatedMeals,
+          groceryList: updatedGroceryList,
+          budget: {
+            ...plan.diet.budget,
+            estimatedCost: totalDailyCost,
+          },
+          protein: {
+            ...plan.diet.protein,
+            achievedGrams: totalProtein,
+            gapGrams: Math.max(0, plan.diet.protein.targetGrams - totalProtein),
+          },
+        },
+      };
+
+      setPlan(updatedPlan);
+      await planStorage.savePlan(updatedPlan);
+      return true;
+    } catch (err) {
+      console.warn('[PlanContext] Swap meal error:', err);
+      return false;
+    }
+  };
+
+  const updateGroceryChecklist = async (itemId: string, checked: boolean): Promise<void> => {
+    if (!plan || !plan.diet || !plan.diet.groceryList) return;
+
+    try {
+      const updatedGroceryList = plan.diet.groceryList.map((item) =>
+        item.id === itemId ? { ...item, checked } : item
+      );
+
+      const updatedPlan: GeneratedPlan = {
+        ...plan,
+        diet: {
+          ...plan.diet,
+          groceryList: updatedGroceryList,
+        },
+      };
+
+      setPlan(updatedPlan);
+      await planStorage.savePlan(updatedPlan);
+    } catch (err) {
+      console.warn('[PlanContext] Update grocery checklist error:', err);
+    }
+  };
+
+  const updateProfileSection = async (
+    section: ProfileSectionKey,
+    updatedSectionData: any
+  ): Promise<SectionUpdateResult> => {
+    setIsLoading(true);
+    setError(null);
+
+    const mergedProfile: OnboardingData = {
+      ...userProfile,
+      [section]: {
+        ...userProfile[section],
+        ...updatedSectionData,
+      },
+    };
+
+    // If user doesn't have an active plan yet, just persist profile
+    if (!plan) {
+      setUserProfile(mergedProfile);
+      await planStorage.saveUserProfile(mergedProfile);
+      setIsLoading(false);
+      return { needsRegeneration: false, regenerated: false, success: true };
+    }
+
+    // Determine what needs to be regenerated
+    let needsNutrition = false;
+    let needsDiet = false;
+    let needsWorkout = false;
+    let needsSchedule = false;
+
+    if (section === 'personal') {
+      const p = updatedSectionData as Partial<PersonalBasics>;
+      const metricsChanged =
+        (p.age !== undefined && p.age !== userProfile.personal.age) ||
+        (p.heightCm !== undefined && p.heightCm !== userProfile.personal.heightCm) ||
+        (p.weightKg !== undefined && p.weightKg !== userProfile.personal.weightKg) ||
+        (p.gender !== undefined && p.gender !== userProfile.personal.gender);
+      const goalChanged = p.goal !== undefined && p.goal !== userProfile.personal.goal;
+
+      if (metricsChanged || goalChanged) {
+        needsNutrition = true;
+        needsDiet = true;
+      }
+      if (goalChanged) {
+        needsWorkout = true;
+      }
+    } else if (section === 'rhythm') {
+      const r = updatedSectionData as Partial<DailyRhythm>;
+      if (r.activityLevel !== undefined && r.activityLevel !== userProfile.rhythm.activityLevel) {
+        needsNutrition = true;
+        needsDiet = true;
+      }
+      needsSchedule = true;
+    } else if (section === 'training') {
+      needsWorkout = true;
+    } else if (section === 'food' || section === 'budget' || section === 'supplements') {
+      needsDiet = true;
+    }
+
+    const needsRegeneration = needsNutrition || needsDiet || needsWorkout || needsSchedule;
+
+    if (!needsRegeneration) {
+      // Just display name or non-algorithmic field changed
+      setUserProfile(mergedProfile);
+      const updatedPlan: GeneratedPlan = {
+        ...plan,
+        userProfile: mergedProfile,
+      };
+      setPlan(updatedPlan);
+      await Promise.all([
+        planStorage.saveUserProfile(mergedProfile),
+        planStorage.savePlan(updatedPlan),
+      ]);
+      setIsLoading(false);
+      return {
+        needsRegeneration: false,
+        regenerated: false,
+        success: true,
+        message: 'Profile updated successfully.',
+      };
+    }
+
+    // Execute needed regenerations
+    try {
+      let updatedNutrition = plan.nutrition;
+      let updatedDiet = plan.diet;
+      let updatedWorkout = plan.workout;
+
+      // 1. Recalculate Nutrition if needed
+      if (needsNutrition) {
+        const goal = mergedProfile.personal.goal === 'weight_loss' ? 'fat_loss' : mergedProfile.personal.goal;
+        const gender = mergedProfile.personal.gender === 'female' ? 'female' : 'male';
+        const activityMap: Record<string, 'sedentary' | 'light' | 'moderate' | 'very_active'> = {
+          sedentary: 'sedentary',
+          lightly_active: 'light',
+          moderately_active: 'moderate',
+          very_active: 'very_active',
+        };
+        const activityLevel = activityMap[mergedProfile.rhythm.activityLevel] || 'moderate';
+
+        updatedNutrition = await nutritionService.calculate({
+          age: Number(mergedProfile.personal.age) || 24,
+          gender,
+          heightCm: Number(mergedProfile.personal.heightCm) || 175,
+          weightKg: Number(mergedProfile.personal.weightKg) || 70,
+          goal,
+          activityLevel,
+        });
+      }
+
+      // 2. Re-optimize Diet if needed
+      if (needsDiet) {
+        const dietMap: Record<string, 'vegetarian' | 'eggetarian' | 'non_vegetarian'> = {
+          pure_veg: 'vegetarian',
+          eggetarian: 'eggetarian',
+          non_veg: 'non_vegetarian',
+        };
+        const dietType = dietMap[mergedProfile.food.dietType] || 'vegetarian';
+
+        const suppMap: Record<string, 'no_supplements' | 'open_to_supplements' | 'unsure'> = {
+          no_supplements: 'no_supplements',
+          open_to_supplements: 'open_to_supplements',
+          not_sure: 'unsure',
+        };
+        const supplementPreference = suppMap[mergedProfile.supplements.preference] || 'no_supplements';
+
+        updatedDiet = await dietService.optimize({
+          nutrition: {
+            calorieTarget: updatedNutrition.calorieTarget,
+            proteinTargetGrams: updatedNutrition.proteinTargetGrams,
+          },
+          dietType,
+          foodBudget: Number(mergedProfile.budget.dailyBudgetRupees) || 65,
+          supplementPreference,
+          mealsPerDay: Number(mergedProfile.food.mealsPerDay) || 3,
+          rhythm: mergedProfile.rhythm,
+          training: mergedProfile.training,
+        });
+      }
+
+      // 3. Regenerate Workout if needed
+      if (needsWorkout) {
+        const gender = mergedProfile.personal.gender === 'female' ? 'female' : 'male';
+        const goal = mergedProfile.personal.goal === 'weight_loss' ? 'fat_loss' : mergedProfile.personal.goal;
+
+        updatedWorkout = await workoutService.generate({
+          gender,
+          environment: mergedProfile.training.environment,
+          durationMinutes: mergedProfile.training.durationMinutes,
+          weeklyFrequencyDays: mergedProfile.training.weeklyFrequencyDays,
+          experienceLevel: mergedProfile.training.experienceLevel,
+          goal,
+        });
+      }
+
+      const updatedPlan: GeneratedPlan = {
+        ...plan,
+        userProfile: mergedProfile,
+        nutrition: updatedNutrition,
+        diet: updatedDiet,
+        workout: updatedWorkout,
+        savedAt: new Date().toISOString(),
+      };
+
+      setUserProfile(mergedProfile);
+      setPlan(updatedPlan);
+      await Promise.all([
+        planStorage.saveUserProfile(mergedProfile),
+        planStorage.savePlan(updatedPlan),
+      ]);
+
+      return {
+        needsRegeneration: true,
+        regenerated: true,
+        success: true,
+        message: 'Plan regenerated and updated successfully.',
+      };
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Failed to regenerate plan with updated parameters. Your previous plan was preserved.';
+      setError(msg);
+      // NOTE: Existing valid plan is preserved! We do not overwrite setPlan with broken data.
+      return {
+        needsRegeneration: true,
+        regenerated: false,
+        success: false,
+        message: msg,
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const resetPlan = async () => {
     await planStorage.clearPlan();
     setPlan(null);
+    setIsLateTiredActive(false);
+    setActiveTab('overview');
+  };
+
+  const clearAllData = async (): Promise<void> => {
+    await planStorage.clearAllData();
+    setPlan(null);
+    setUserProfile(initialEmptyOnboardingData);
     setIsLateTiredActive(false);
     setActiveTab('overview');
   };
@@ -311,11 +706,15 @@ export const PlanProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLateTiredActive,
         setIsLateTiredActive,
         updateUserProfile,
+        updateProfileSection,
         generatePlan,
         regeneratePlan,
         switchWorkoutEnvironment,
         swapExercise,
+        swapMeal,
+        updateGroceryChecklist,
         resetPlan,
+        clearAllData,
         clearError,
       }}
     >

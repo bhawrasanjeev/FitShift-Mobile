@@ -7,6 +7,7 @@ import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import { Badge } from '../common/Badge';
+import { Icon, IconName } from '../common/Icon';
 
 export interface MealCardProps {
   meal: PlannedMeal;
@@ -15,19 +16,19 @@ export interface MealCardProps {
 }
 
 export const MealCard: React.FC<MealCardProps> = ({ meal, onSwap, style }) => {
-  const getMealTypeBadge = (type: string) => {
+  const getMealTypeBadge = (type: string): { label: string; icon: IconName } => {
     switch (type.toLowerCase()) {
       case 'breakfast':
-        return { label: 'Breakfast', icon: '🌅' };
+        return { label: 'Breakfast', icon: 'sun' };
       case 'lunch':
-        return { label: 'Lunch', icon: '☀️' };
+        return { label: 'Lunch', icon: 'utensils' };
       case 'evening_snack':
       case 'snack':
-        return { label: 'Snack', icon: '🍵' };
+        return { label: 'Snack', icon: 'leaf' };
       case 'dinner':
-        return { label: 'Dinner', icon: '🌙' };
+        return { label: 'Dinner', icon: 'moon' };
       default:
-        return { label: type.replace('_', ' '), icon: '🥗' };
+        return { label: type.replace('_', ' '), icon: 'utensils' };
     }
   };
 
@@ -38,12 +39,15 @@ export const MealCard: React.FC<MealCardProps> = ({ meal, onSwap, style }) => {
       {/* Top Header Row */}
       <View style={styles.topRow}>
         <View style={styles.badgeWrapper}>
-          <Text style={styles.mealIcon}>{badgeInfo.icon}</Text>
+          <Icon name={badgeInfo.icon} size={15} color={colors.primaryDark} />
           <Badge label={badgeInfo.label} variant="neutral" size="sm" />
         </View>
 
         {meal.prepTimeMinutes ? (
-          <Text style={styles.prepTime}>⏱ {meal.prepTimeMinutes} mins</Text>
+          <View style={styles.prepTimeRow}>
+            <Icon name="clock" size={13} color={colors.textMuted} />
+            <Text style={styles.prepTime}>{meal.prepTimeMinutes} mins</Text>
+          </View>
         ) : null}
       </View>
 
@@ -68,7 +72,8 @@ export const MealCard: React.FC<MealCardProps> = ({ meal, onSwap, style }) => {
       {/* Cooking Tip if present */}
       {meal.cookingTip ? (
         <View style={styles.tipBox}>
-          <Text style={styles.tipText}>💡 {meal.cookingTip}</Text>
+          <Icon name="sparkles" size={13} color={colors.primaryDark} />
+          <Text style={styles.tipText}>{meal.cookingTip}</Text>
         </View>
       ) : null}
 
@@ -91,7 +96,8 @@ export const MealCard: React.FC<MealCardProps> = ({ meal, onSwap, style }) => {
             onPress={() => onSwap(meal.id)}
             style={styles.swapButton}
           >
-            <Text style={styles.swapText}>⇄ Swap</Text>
+            <Icon name="refresh" size={12} color={colors.primaryDark} />
+            <Text style={styles.swapText}>Swap</Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -120,8 +126,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  mealIcon: {
-    fontSize: 16,
+  prepTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   prepTime: {
     fontSize: typography.sizes.xs,
@@ -160,6 +168,9 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
   },
   tipBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: '#FEF3C7',
     borderRadius: borderRadius.md,
     paddingVertical: spacing.xs,
@@ -200,6 +211,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   swapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.md,

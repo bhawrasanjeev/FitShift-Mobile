@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OnboardingData } from '../../types';
 import { ProgressBar } from '../common/ProgressBar';
 import { Button } from '../common/Button';
+import { Logo } from '../common/Logo';
 import { StepPersonalBasics } from './StepPersonalBasics';
 import { StepDailyRhythm } from './StepDailyRhythm';
 import { StepTrainingSetup } from './StepTrainingSetup';
@@ -169,7 +170,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       <View style={[styles.header, { paddingTop: Math.max(insets.top, spacing.md) }]}>
         <View style={styles.headerMetaRow}>
           <View style={styles.brandTag}>
-            <Text style={styles.brandTagIcon}>✓</Text>
+            <Logo size={16} />
             <Text style={styles.brandTagText}>FitShift Onboarding</Text>
           </View>
           <View style={styles.stepBadge}>

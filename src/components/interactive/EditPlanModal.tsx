@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Modal } from './Modal';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import { OnboardingData, DietType, BudgetTier } from '../../types';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -88,7 +89,8 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
         <View style={styles.container}>
           {errorMessage ? (
             <View style={styles.errorBox}>
-              <Text style={styles.errorText}>⚠️ {errorMessage}</Text>
+              <Icon name="alert" size={13} color="#DC2626" />
+              <Text style={styles.errorText}>{errorMessage}</Text>
             </View>
           ) : null}
 
@@ -111,7 +113,11 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
                     : styles.envButtonUnselected,
                 ]}
               >
-                <Text style={styles.envIcon}>🏠</Text>
+                <Icon
+                  name="home"
+                  size={16}
+                  color={data.training.environment === 'home' ? colors.surface : colors.primaryDark}
+                />
                 <Text
                   style={[
                     styles.envText,
@@ -137,7 +143,11 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
                     : styles.envButtonUnselected,
                 ]}
               >
-                <Text style={styles.envIcon}>🏋️</Text>
+                <Icon
+                  name="dumbbell"
+                  size={16}
+                  color={data.training.environment === 'gym' ? colors.surface : colors.primaryDark}
+                />
                 <Text
                   style={[
                     styles.envText,
@@ -305,7 +315,9 @@ export const EditPlanModal: React.FC<EditPlanModalProps> = ({
                     >
                       {titles[b]}
                     </Text>
-                    {isSelected ? <Text style={styles.checkIcon}>✓</Text> : null}
+                    {isSelected ? (
+                      <Icon name="check" size={14} color={colors.white} strokeWidth={2.5} />
+                    ) : null}
                   </TouchableOpacity>
                 );
               })}
@@ -326,6 +338,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     backgroundColor: colors.dangerLight,
     borderColor: colors.danger,
     borderWidth: 1,
@@ -367,9 +382,6 @@ const styles = StyleSheet.create({
   envButtonUnselected: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-  },
-  envIcon: {
-    fontSize: 16,
   },
   envText: {
     ...typography.caption,

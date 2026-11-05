@@ -15,6 +15,7 @@ import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 
 export interface ExerciseDetailModalProps {
   visible: boolean;
@@ -72,7 +73,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
               onPress={onClose}
               style={styles.closeButton}
             >
-              <Text style={styles.closeIcon}>✕</Text>
+              <Icon name="x" size={16} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -104,7 +105,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 </>
               ) : (
                 <View style={styles.fallbackBox}>
-                  <Text style={styles.fallbackEmoji}>🏋️</Text>
+                  <Icon name="dumbbell" size={32} color={colors.primary} />
                   <Text style={styles.fallbackTitle}>Visual Exercise Form Guide</Text>
                   <Text style={styles.fallbackSub}>
                     Maintain a neutral spine and controlled tempo through full range of motion.
@@ -115,7 +116,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
               {/* Overlay pill for sets & rest */}
               <View style={styles.imageFooterOverlay}>
                 <View style={styles.imageOverlayItem}>
-                  <Text style={styles.overlayIcon}>🏋️</Text>
+                  <Icon name="activity" size={14} color={colors.textInverse} />
                   <Text style={styles.overlayText}>{exercise.setsReps}</Text>
                 </View>
                 <TouchableOpacity
@@ -127,7 +128,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                   }}
                   style={styles.overlayTimerButton}
                 >
-                  <Text style={styles.overlayIcon}>⏱️</Text>
+                  <Icon name="timer" size={13} color={colors.primaryDark} />
                   <Text style={styles.overlayTimerText}>
                     {exercise.restSeconds}s Rest Timer
                   </Text>
@@ -178,7 +179,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
             {exercise.commonMistakes && exercise.commonMistakes.length > 0 ? (
               <View style={styles.cautionCard}>
                 <View style={styles.cautionHeader}>
-                  <Text style={styles.cautionIcon}>⚠️</Text>
+                  <Icon name="alert" size={16} color={colors.warning} />
                   <Text style={styles.cautionTitle}>COMMON FORM MISTAKES</Text>
                 </View>
                 {exercise.commonMistakes.map((mistake, idx) => (
@@ -195,7 +196,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
               <View style={styles.alternativeCard}>
                 <View style={styles.altHeader}>
                   <View style={styles.altBadgeRow}>
-                    <Text style={styles.altBadgeIcon}>🔥</Text>
+                    <Icon name="refresh" size={14} color={colors.primaryDark} />
                     <Text style={styles.altBadgeTitle}>DIRECT PAIRED ALTERNATIVE</Text>
                   </View>
                   <Badge
@@ -220,7 +221,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                     }}
                     style={styles.swapActionBtn}
                   >
-                    <Text style={styles.swapActionIcon}>⇄</Text>
+                    <Icon name="refresh" size={14} color={colors.primaryDark} />
                     <Text style={styles.swapActionText}>
                       Switch to {exercise.alternative.name}
                     </Text>

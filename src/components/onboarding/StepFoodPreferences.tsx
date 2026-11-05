@@ -8,6 +8,7 @@ import {
 } from '../../types';
 import { SelectCard } from '../selection/SelectCard';
 import { Badge } from '../common/Badge';
+import { Icon, IconName } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -22,27 +23,27 @@ export const StepFoodPreferences: React.FC<StepFoodPreferencesProps> = ({
   data,
   onChange,
 }) => {
-  const diets: { id: DietType; label: string; desc: string; badge: string; icon: string }[] = [
+  const diets: { id: DietType; label: string; desc: string; badge: string; icon: IconName }[] = [
     {
       id: 'pure_veg',
       label: 'Pure Vegetarian',
       desc: 'Dairy, pulses, sattu, soya, paneer & whole grains. Zero eggs/meat.',
       badge: 'Zero Meat/Egg',
-      icon: '🌿',
+      icon: 'leaf',
     },
     {
       id: 'eggetarian',
       label: 'Eggetarian',
       desc: 'Vegetarian staples plus whole eggs and egg whites for budget protein.',
       badge: 'Eggs Included',
-      icon: '🥚',
+      icon: 'egg',
     },
     {
       id: 'non_veg',
       label: 'Non-Vegetarian',
       desc: 'Eggs, chicken, fish combined with traditional dal, roti and sabzi.',
       badge: 'Chicken & Eggs',
-      icon: '🍗',
+      icon: 'utensils',
     },
   ];
 
@@ -118,7 +119,13 @@ export const StepFoodPreferences: React.FC<StepFoodPreferencesProps> = ({
               title={d.label}
               description={d.desc}
               badge={d.badge}
-              icon={<Text style={styles.dietIcon}>{d.icon}</Text>}
+              icon={
+                <Icon
+                  name={d.icon}
+                  size={20}
+                  color={data.dietType === d.id ? colors.primaryDark : colors.textSecondary}
+                />
+              }
               selected={data.dietType === d.id}
               onSelect={() => onChange({ dietType: d.id })}
               style={styles.dietCard}
@@ -236,9 +243,6 @@ const styles = StyleSheet.create({
   },
   dietCard: {
     marginBottom: spacing.xs,
-  },
-  dietIcon: {
-    fontSize: 20,
   },
   cookingList: {
     gap: spacing.sm,

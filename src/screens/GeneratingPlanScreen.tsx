@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import { OnboardingData } from '../types';
 import { usePlan } from '../context/PlanContext';
 import { Button } from '../components/common/Button';
 import { ErrorState } from '../components/common/ErrorState';
+import { Logo } from '../components/common/Logo';
+import { Icon } from '../components/common/Icon';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
@@ -39,6 +41,16 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
   ];
 
   const pulseAnim = useState(new Animated.Value(1))[0];
+  const isMountedRef = useRef(true);
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     Animated.loop(
@@ -68,21 +80,21 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
 
   // Execute plan generation
   useEffect(() => {
-    let isMounted = true;
+    if (hasStarted) return;
+    setHasStarted(true);
+    setGenerationFailed(false);
+    clearError();
 
     async function execute() {
-      if (hasStarted) return;
-      setHasStarted(true);
-      setGenerationFailed(false);
-      clearError();
-
       const success = await generatePlan(data);
-      if (!isMounted) return;
+      if (!isMountedRef.current) return;
 
       if (success) {
         // Small pause to allow animations to settle
         setTimeout(() => {
-          if (isMounted) onSuccess();
+          if (isMountedRef.current) {
+            onSuccessRef.current();
+          }
         }, 500);
       } else {
         setGenerationFailed(true);
@@ -90,11 +102,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
     }
 
     execute();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [data, generatePlan, hasStarted, onSuccess, clearError]);
+  }, [hasStarted, data, generatePlan, clearError]);
 
   const handleRetry = async () => {
     setGenerationFailed(false);
@@ -102,7 +110,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
     setActiveStage(1);
     const success = await generatePlan(data);
     if (success) {
-      onSuccess();
+      onSuccessRef.current();
     } else {
       setGenerationFailed(true);
     }
@@ -141,7 +149,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
           },
         ]}
       >
-        <Text style={styles.logoIcon}>🏋️</Text>
+        <Logo size={56} />
       </Animated.View>
 
       {/* Primary Status Title */}
@@ -168,7 +176,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
                 ]}
               >
                 {isDone ? (
-                  <Text style={styles.checkIcon}>✓</Text>
+                  <Icon name="check" size={12} color="#FFFFFF" />
                 ) : isCurrent ? (
                   <ActivityIndicator size="small" color={colors.primary} />
                 ) : (
@@ -228,9 +236,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  logoIcon: {
-    fontSize: 38,
   },
   statusCol: {
     alignItems: 'center',

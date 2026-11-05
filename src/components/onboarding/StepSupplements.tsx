@@ -4,6 +4,7 @@ import { Supplements, SupplementPreference } from '../../types';
 import { SelectCard } from '../selection/SelectCard';
 import { NumberInput } from '../selection/NumberInput';
 import { OptionChip } from '../selection/OptionChip';
+import { Icon, IconName } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -23,7 +24,7 @@ export const StepSupplements: React.FC<StepSupplementsProps> = ({
     title: string;
     description: string;
     badge?: string;
-    icon: string;
+    icon: IconName;
   }[] = [
     {
       id: 'no_supplements',
@@ -31,21 +32,21 @@ export const StepSupplements: React.FC<StepSupplementsProps> = ({
       description:
         'Prioritize 100% kitchen staples: Sattu, Moong Dal, Kala Chana, Curd, Paneer, and Eggs. Zero powders.',
       badge: 'Recommended',
-      icon: '🍎',
+      icon: 'leaf',
     },
     {
       id: 'open_to_supplements',
       title: "Yes, I'm open to evidence-backed supplements",
       description:
         'Consider practical additions like pure Creatine Monohydrate or convenient unflavoured Whey Protein.',
-      icon: '💊',
+      icon: 'pill',
     },
     {
       id: 'not_sure',
       title: 'Not sure — help me understand my options',
       description:
         'FitShift will provide an educational breakdown showing food alternatives alongside supplement costs.',
-      icon: '❓',
+      icon: 'info',
     },
   ];
 
@@ -66,7 +67,13 @@ export const StepSupplements: React.FC<StepSupplementsProps> = ({
               title={opt.title}
               description={opt.description}
               badge={opt.badge}
-              icon={<Text style={styles.optionIcon}>{opt.icon}</Text>}
+              icon={
+                <Icon
+                  name={opt.icon}
+                  size={20}
+                  color={data.preference === opt.id ? colors.primaryDark : colors.textSecondary}
+                />
+              }
               selected={data.preference === opt.id}
               onSelect={() => onChange({ preference: opt.id })}
               style={styles.optionCard}
@@ -105,15 +112,12 @@ export const StepSupplements: React.FC<StepSupplementsProps> = ({
         </View>
       ) : null}
 
-      {/* Food-First Integrity Callout */}
+      {/* Food-First Note */}
       <View style={styles.noticeBox}>
-        <Text style={styles.noticeIcon}>🛡️</Text>
-        <View style={styles.noticeTextContainer}>
-          <Text style={styles.noticeTitle}>Food-First Integrity</Text>
-          <Text style={styles.noticeText}>
-            No supplement is mandatory for fitness, muscle hypertrophy, or weight loss. We never recommend commercial powders simply because a budget exists.
-          </Text>
-        </View>
+        <Icon name="shield" size={16} color={colors.primary} />
+        <Text style={styles.noticeText}>
+          Whole foods are prioritized. Supplements remain strictly optional.
+        </Text>
       </View>
     </View>
   );
@@ -145,9 +149,6 @@ const styles = StyleSheet.create({
   optionCard: {
     marginBottom: spacing.xs,
   },
-  optionIcon: {
-    fontSize: 20,
-  },
   budgetBox: {
     backgroundColor: colors.backgroundSecondary,
     borderColor: colors.border,
@@ -169,30 +170,19 @@ const styles = StyleSheet.create({
   },
   noticeBox: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
+    alignItems: 'center',
+    gap: spacing.sm,
     backgroundColor: colors.primaryLight,
     borderColor: colors.accentBorder,
     borderWidth: 1,
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-  },
-  noticeIcon: {
-    fontSize: 22,
-    marginTop: 2,
-  },
-  noticeTextContainer: {
-    flex: 1,
-    gap: spacing.xxs,
-  },
-  noticeTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: colors.primaryDark,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   noticeText: {
     ...typography.caption,
     color: colors.primaryDark,
-    lineHeight: 18,
+    flex: 1,
+    fontWeight: '500',
   },
 });

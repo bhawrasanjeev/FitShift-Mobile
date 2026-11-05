@@ -9,23 +9,29 @@ import {
 import { usePlan } from '../../context/PlanContext';
 import { Header } from '../../components/common/Header';
 import { Badge } from '../../components/common/Badge';
+import { Icon, IconName } from '../../components/common/Icon';
+import { RecoveryScreen } from './RecoveryScreen';
 import { generateUserSchedule } from '../../utils/schedule';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
 
+export type ScheduleSubView = 'rhythm' | 'recovery';
+
 export const ScheduleTabScreen: React.FC = () => {
   const { plan, userProfile } = usePlan();
+  const [activeSubView, setActiveSubView] = useState<ScheduleSubView>('rhythm');
   const [activeFilter, setActiveFilter] = useState<string>('all');
 
   if (!plan) {
     return (
       <View style={styles.screen}>
         <Header title="24-Hour Rhythm" showBrand={false} />
-        <View style={[styles.anchorsCard, { margin: spacing.lg }]}>
-          <Text style={styles.anchorsTitle}>No Schedule Active</Text>
-          <Text style={styles.timelineDesc}>
+        <View style={styles.emptyContainer}>
+          <Icon name="clock" size={44} color={colors.primary} />
+          <Text style={styles.emptyTitle}>No Schedule Active</Text>
+          <Text style={styles.emptySub}>
             Complete onboarding to align workout and meal windows with your daily transit.
           </Text>
         </View>
@@ -49,13 +55,13 @@ export const ScheduleTabScreen: React.FC = () => {
 
   const typeConfig: Record<
     string,
-    { badgeText: string; badgeVariant: 'accent' | 'neutral' | 'warning' | 'success'; icon: string }
+    { badgeText: string; badgeVariant: 'accent' | 'neutral' | 'warning' | 'success'; iconName: IconName }
   > = {
-    workout: { badgeText: 'Training', badgeVariant: 'accent', icon: '🏋️' },
-    meal: { badgeText: 'Nutrition', badgeVariant: 'warning', icon: '🥗' },
-    work: { badgeText: 'Occupational', badgeVariant: 'neutral', icon: '💼' },
-    sleep: { badgeText: 'Recovery', badgeVariant: 'accent', icon: '🌙' },
-    recovery: { badgeText: 'Hydration', badgeVariant: 'success', icon: '💧' },
+    workout: { badgeText: 'Training', badgeVariant: 'accent', iconName: 'dumbbell' },
+    meal: { badgeText: 'Nutrition', badgeVariant: 'warning', iconName: 'utensils' },
+    work: { badgeText: 'Occupational', badgeVariant: 'neutral', iconName: 'briefcase' },
+    sleep: { badgeText: 'Recovery', badgeVariant: 'accent', iconName: 'moon' },
+    recovery: { badgeText: 'Hydration', badgeVariant: 'success', iconName: 'droplet' },
   };
 
   return (
@@ -73,106 +79,164 @@ export const ScheduleTabScreen: React.FC = () => {
         }
       />
 
-      {/* Filter Chips Bar */}
-      <View style={styles.filterBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
-          {filterTabs.map((tab) => {
-            const isSelected = activeFilter === tab.id;
-            return (
-              <TouchableOpacity
-                key={tab.id}
-                activeOpacity={0.7}
-                onPress={() => setActiveFilter(tab.id)}
-                style={[
-                  styles.filterChip,
-                  isSelected ? styles.filterChipSelected : styles.filterChipUnselected,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.filterChipText,
-                    isSelected && styles.filterChipTextSelected,
-                  ]}
-                >
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+      {/* Segmented Sub-Navigation Bar */}
+      <View style={styles.subViewTabBar}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setActiveSubView('rhythm')}
+          style={[
+            styles.subViewTab,
+            activeSubView === 'rhythm' && styles.subViewTabActive,
+          ]}
+        >
+          <Icon
+            name="clock"
+            size={14}
+            color={activeSubView === 'rhythm' ? colors.primaryDark : colors.textMuted}
+          />
+          <Text
+            style={[
+              styles.subViewTabText,
+              activeSubView === 'rhythm' && styles.subViewTabTextActive,
+            ]}
+          >
+            Daily Schedule
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setActiveSubView('recovery')}
+          style={[
+            styles.subViewTab,
+            activeSubView === 'recovery' && styles.subViewTabActive,
+          ]}
+        >
+          <Icon
+            name="moon"
+            size={14}
+            color={activeSubView === 'recovery' ? colors.primaryDark : colors.textMuted}
+          />
+          <Text
+            style={[
+              styles.subViewTabText,
+              activeSubView === 'recovery' && styles.subViewTabTextActive,
+            ]}
+          >
+            Sleep & Recovery
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Rhythm Anchors Card */}
-        <View style={styles.anchorsCard}>
-          <Text style={styles.anchorsTitle}>CIRCADIAN & TRANSIT ANCHORS</Text>
-          <View style={styles.anchorsGrid}>
-            <View style={styles.anchorCol}>
-              <Text style={styles.anchorLabel}>WAKE UP</Text>
-              <Text style={styles.anchorVal}>{userProfile.rhythm.wakeUpTime || '06:30'}</Text>
-            </View>
-            <View style={styles.anchorVDivider} />
-            <View style={styles.anchorCol}>
-              <Text style={styles.anchorLabel}>DEPARTURE</Text>
-              <Text style={styles.anchorVal}>{userProfile.rhythm.departureTime || '08:30'}</Text>
-            </View>
-            <View style={styles.anchorVDivider} />
-            <View style={styles.anchorCol}>
-              <Text style={styles.anchorLabel}>RETURN</Text>
-              <Text style={styles.anchorVal}>{userProfile.rhythm.returnTime || '18:30'}</Text>
-            </View>
-            <View style={styles.anchorVDivider} />
-            <View style={styles.anchorCol}>
-              <Text style={styles.anchorLabel}>SLEEP</Text>
-              <Text style={styles.anchorVal}>{userProfile.rhythm.sleepHours} hrs</Text>
-            </View>
+      {activeSubView === 'recovery' ? (
+        <RecoveryScreen
+          showHeader={false}
+          onBackToSchedule={() => setActiveSubView('rhythm')}
+        />
+      ) : (
+        <View style={styles.tabContent}>
+          {/* Filter Chips Bar */}
+          <View style={styles.filterBar}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+              {filterTabs.map((tab) => {
+                const isSelected = activeFilter === tab.id;
+                return (
+                  <TouchableOpacity
+                    key={tab.id}
+                    activeOpacity={0.7}
+                    onPress={() => setActiveFilter(tab.id)}
+                    style={[
+                      styles.filterChip,
+                      isSelected ? styles.filterChipSelected : styles.filterChipUnselected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        isSelected && styles.filterChipTextSelected,
+                      ]}
+                    >
+                      {tab.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
-        </View>
 
-        {/* Chronological Timeline */}
-        <View style={styles.timelineList}>
-          {filteredEvents.map((evt, idx) => {
-            const conf = typeConfig[evt.type] || {
-              badgeText: evt.type,
-              badgeVariant: 'neutral' as const,
-              icon: '⏱️',
-            };
-
-            return (
-              <View key={evt.id} style={styles.timelineItem}>
-                <View style={styles.timelineLeftCol}>
-                  <Text style={styles.timelineTimeText}>{evt.time}</Text>
-                  {idx < filteredEvents.length - 1 ? (
-                    <View style={styles.timelineLine} />
-                  ) : null}
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Rhythm Anchors Card */}
+            <View style={styles.anchorsCard}>
+              <Text style={styles.anchorsTitle}>CIRCADIAN & TRANSIT ANCHORS</Text>
+              <View style={styles.anchorsGrid}>
+                <View style={styles.anchorCol}>
+                  <Text style={styles.anchorLabel}>WAKE UP</Text>
+                  <Text style={styles.anchorVal}>{userProfile.rhythm.wakeUpTime || '06:30'}</Text>
                 </View>
-
-                <View style={styles.timelineCard}>
-                  <View style={styles.timelineCardHeader}>
-                    <View style={styles.timelineTitleRow}>
-                      <Text style={styles.timelineIcon}>{conf.icon}</Text>
-                      <Text style={styles.timelineTitle}>{evt.title}</Text>
-                    </View>
-                    <Badge
-                      label={conf.badgeText}
-                      variant={conf.badgeVariant}
-                      size="sm"
-                    />
-                  </View>
-                  <Text style={styles.timelineDesc}>{evt.description}</Text>
-                  {evt.duration ? (
-                    <Text style={styles.timelineDuration}>Duration: {evt.duration}</Text>
-                  ) : null}
+                <View style={styles.anchorVDivider} />
+                <View style={styles.anchorCol}>
+                  <Text style={styles.anchorLabel}>DEPARTURE</Text>
+                  <Text style={styles.anchorVal}>{userProfile.rhythm.departureTime || '08:30'}</Text>
+                </View>
+                <View style={styles.anchorVDivider} />
+                <View style={styles.anchorCol}>
+                  <Text style={styles.anchorLabel}>RETURN</Text>
+                  <Text style={styles.anchorVal}>{userProfile.rhythm.returnTime || '18:30'}</Text>
+                </View>
+                <View style={styles.anchorVDivider} />
+                <View style={styles.anchorCol}>
+                  <Text style={styles.anchorLabel}>SLEEP</Text>
+                  <Text style={styles.anchorVal}>{userProfile.rhythm.sleepHours} hrs</Text>
                 </View>
               </View>
-            );
-          })}
+            </View>
+
+            {/* Chronological Timeline */}
+            <View style={styles.timelineList}>
+              {filteredEvents.map((evt, idx) => {
+                const conf = typeConfig[evt.type] || {
+                  badgeText: evt.type,
+                  badgeVariant: 'neutral' as const,
+                  iconName: 'clock' as const,
+                };
+
+                return (
+                  <View key={evt.id} style={styles.timelineItem}>
+                    <View style={styles.timelineLeftCol}>
+                      <Text style={styles.timelineTimeText}>{evt.time}</Text>
+                      {idx < filteredEvents.length - 1 ? (
+                        <View style={styles.timelineLine} />
+                      ) : null}
+                    </View>
+
+                    <View style={styles.timelineCard}>
+                      <View style={styles.timelineCardHeader}>
+                        <View style={styles.timelineTitleRow}>
+                          <Icon name={conf.iconName} size={15} color={colors.primary} />
+                          <Text style={styles.timelineTitle}>{evt.title}</Text>
+                        </View>
+                        <Badge
+                          label={conf.badgeText}
+                          variant={conf.badgeVariant}
+                          size="sm"
+                        />
+                      </View>
+                      <Text style={styles.timelineDesc}>{evt.description}</Text>
+                      {evt.duration ? (
+                        <Text style={styles.timelineDuration}>Duration: {evt.duration}</Text>
+                      ) : null}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
+      )}
     </View>
   );
 };
@@ -181,6 +245,61 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  tabContent: {
+    flex: 1,
+  },
+  emptyContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xxl,
+  },
+  emptyIcon: {
+    fontSize: 48,
+  },
+  emptyTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+  },
+  emptySub: {
+    ...typography.caption,
+    color: colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 18,
+    maxWidth: 280,
+  },
+  subViewTabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderBottomColor: colors.borderSubtle,
+    borderBottomWidth: 1,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    gap: spacing.xs,
+  },
+  subViewTab: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    paddingVertical: spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.lg,
+  },
+  subViewTabActive: {
+    backgroundColor: colors.primaryLight,
+  },
+  subViewTabText: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.textMuted,
+    fontSize: 11,
+  },
+  subViewTabTextActive: {
+    color: colors.primaryDark,
+    fontWeight: '800',
   },
   filterBar: {
     backgroundColor: colors.surface,
@@ -250,46 +369,50 @@ const styles = StyleSheet.create({
   },
   anchorLabel: {
     ...typography.caption,
+    fontSize: 9,
     fontWeight: '700',
     color: colors.textMuted,
-    fontSize: 9,
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
   anchorVal: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: colors.primaryDark,
+    ...typography.caption,
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.textPrimary,
   },
   anchorVDivider: {
     width: 1,
-    height: 28,
+    height: 24,
     backgroundColor: colors.borderSubtle,
   },
   timelineList: {
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   timelineItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   timelineLeftCol: {
-    width: 52,
+    width: 64,
     alignItems: 'center',
-    gap: 4,
   },
   timelineTimeText: {
     ...typography.caption,
     fontWeight: '800',
     color: colors.textPrimary,
-    fontSize: 12,
+    fontSize: 11,
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
   },
   timelineLine: {
     width: 2,
     flex: 1,
+    backgroundColor: colors.borderSubtle,
+    marginVertical: 4,
     minHeight: 40,
-    backgroundColor: colors.borderStrong,
-    marginTop: 4,
   },
   timelineCard: {
     flex: 1,
@@ -298,13 +421,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: borderRadius.xl,
     padding: spacing.md,
-    gap: 4,
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
   },
   timelineCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: spacing.xs,
   },
   timelineTitleRow: {
     flexDirection: 'row',
@@ -312,24 +435,23 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     flex: 1,
   },
-  timelineIcon: {
-    fontSize: 14,
-  },
   timelineTitle: {
     ...typography.bodySmall,
     fontWeight: '700',
     color: colors.textPrimary,
-    flex: 1,
   },
   timelineDesc: {
     ...typography.caption,
     color: colors.textSecondary,
-    lineHeight: 18,
+    lineHeight: 16,
+    fontSize: 11,
   },
   timelineDuration: {
     ...typography.caption,
-    color: colors.textMuted,
     fontSize: 10,
-    marginTop: 2,
+    color: colors.textMuted,
+    fontWeight: '600',
   },
 });
+
+export default ScheduleTabScreen;

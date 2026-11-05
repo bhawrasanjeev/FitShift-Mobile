@@ -11,6 +11,7 @@ import { usePlan } from '../context/PlanContext';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { Header } from '../components/common/Header';
+import { Icon } from '../components/common/Icon';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
@@ -77,7 +78,8 @@ export const PlanSummaryScreen: React.FC<PlanSummaryScreenProps> = ({
             onPress={handleResetConfirm}
             style={styles.resetButton}
           >
-            <Text style={styles.resetButtonText}>🔄 Reset</Text>
+            <Icon name="refresh" size={13} color={colors.textSecondary} />
+            <Text style={styles.resetButtonText}>Reset</Text>
           </TouchableOpacity>
         }
       />
@@ -107,17 +109,17 @@ export const PlanSummaryScreen: React.FC<PlanSummaryScreenProps> = ({
 
           <View style={styles.bannerTags}>
             <Badge
-              label={userProfile.training.environment === 'home' ? '🏠 Home Workouts' : '🏋️ Commercial Gym'}
+              label={userProfile.training.environment === 'home' ? 'Home Workouts' : 'Commercial Gym'}
               variant="neutral"
               size="sm"
             />
             <Badge
-              label={`💰 ₹${userProfile.budget.dailyBudgetRupees}/day budget`}
+              label={`₹${userProfile.budget.dailyBudgetRupees}/day budget`}
               variant="neutral"
               size="sm"
             />
             <Badge
-              label={`🥗 ${userProfile.food.dietType.replace('_', ' ')}`}
+              label={userProfile.food.dietType.replace('_', ' ')}
               variant="neutral"
               size="sm"
             />
@@ -166,17 +168,10 @@ export const PlanSummaryScreen: React.FC<PlanSummaryScreenProps> = ({
                 </Text>
               </View>
               <Badge
-                label={diet.feasible ? '✓ Budget Feasible' : 'Exceeds Target'}
+                label={diet.feasible ? 'Budget Feasible' : 'Exceeds Target'}
                 variant={diet.feasible ? 'accent' : 'warning'}
                 size="sm"
               />
-            </View>
-
-            <View style={styles.soyaNotice}>
-              <Text style={styles.soyaIcon}>🛡️</Text>
-              <Text style={styles.soyaText}>
-                50g daily soya chunks cap strictly respected for safe phytoestrogen and digestive balance.
-              </Text>
             </View>
 
             <View style={styles.mealsCountRow}>
@@ -228,32 +223,6 @@ export const PlanSummaryScreen: React.FC<PlanSummaryScreenProps> = ({
                 </View>
               ))}
             </View>
-          </View>
-        </View>
-
-        {/* Quick Developer Audit Shortcuts */}
-        <View style={styles.devSection}>
-          <Text style={styles.devHeader}>DEVELOPER AUDIT TOOLS</Text>
-          <View style={styles.devButtonsRow}>
-            {onOpenShowcase ? (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={onOpenShowcase}
-                style={styles.devButton}
-              >
-                <Text style={styles.devButtonText}>🎨 Design Showcase</Text>
-              </TouchableOpacity>
-            ) : null}
-
-            {onOpenApiConsole ? (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={onOpenApiConsole}
-                style={styles.devButton}
-              >
-                <Text style={styles.devButtonText}>🔌 API Console</Text>
-              </TouchableOpacity>
-            ) : null}
           </View>
         </View>
       </ScrollView>
@@ -459,9 +428,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
     padding: spacing.sm,
     borderRadius: borderRadius.md,
-  },
-  soyaIcon: {
-    fontSize: 14,
   },
   soyaText: {
     ...typography.caption,

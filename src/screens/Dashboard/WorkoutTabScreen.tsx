@@ -10,6 +10,7 @@ import {
 import { usePlan } from '../../context/PlanContext';
 import { Header } from '../../components/common/Header';
 import { Badge } from '../../components/common/Badge';
+import { Icon } from '../../components/common/Icon';
 import { ExerciseCard } from '../../components/fitness/ExerciseCard';
 import {
   EnvironmentToggle,
@@ -59,7 +60,7 @@ export const WorkoutTabScreen: React.FC = () => {
       <View style={styles.screen}>
         <Header title="Workout Routine" showBrand={false} />
         <View style={[styles.restDayCard, { margin: spacing.lg }]}>
-          <Text style={styles.restDayEmoji}>🏋️</Text>
+          <Icon name="dumbbell" size={40} color={colors.primary} />
           <Text style={styles.restDayCardTitle}>No Workout Routine Active</Text>
           <Text style={styles.restDayCardDesc}>
             Generate a personalized FitShift routine to view your 7-day split and exercises.
@@ -164,7 +165,7 @@ export const WorkoutTabScreen: React.FC = () => {
         {isLateTiredActive ? (
           <View style={styles.lateTiredNotice}>
             <View style={styles.lateTiredIconBadge}>
-              <Text style={styles.lateTiredIcon}>🌙</Text>
+              <Icon name="moon" size={16} color={colors.warning} />
             </View>
             <View style={styles.lateTiredContent}>
               <Text style={styles.lateTiredTitle}>Late / Tired Mode Active</Text>
@@ -186,7 +187,7 @@ export const WorkoutTabScreen: React.FC = () => {
         <View style={styles.splitBanner}>
           <View style={styles.splitHeaderRow}>
             <View>
-              <Text style={styles.splitCategoryTag}>DETERMINISTIC SPLIT ARCHITECTURE</Text>
+              <Text style={styles.splitCategoryTag}>SPLIT ARCHITECTURE</Text>
               <Text style={styles.splitName}>
                 {workout.weeklyFrequencyDays}-Day {currentEnv === 'home' ? 'Home' : 'Gym'} Split
               </Text>
@@ -204,18 +205,21 @@ export const WorkoutTabScreen: React.FC = () => {
 
           <View style={styles.splitBadgesRow}>
             <View style={styles.splitMetaBadge}>
+              <Icon name="target" size={12} color={colors.primaryDark} />
               <Text style={styles.splitMetaBadgeText}>
-                🎯 {goalLabels[userProfile.personal.goal] || userProfile.personal.goal}
+                {goalLabels[userProfile.personal.goal] || userProfile.personal.goal}
               </Text>
             </View>
             <View style={styles.splitMetaBadge}>
+              <Icon name="clock" size={12} color={colors.primaryDark} />
               <Text style={styles.splitMetaBadgeText}>
-                ⏱️ {workout.durationMinutes}m / session
+                {workout.durationMinutes}m / session
               </Text>
             </View>
             <View style={styles.splitMetaBadge}>
+              <Icon name="dumbbell" size={12} color={colors.primaryDark} />
               <Text style={styles.splitMetaBadgeText}>
-                🏋️ {workout.days?.reduce((acc, d) => acc + (d.exercises?.length || 0), 0)} movements programmed
+                {workout.days?.reduce((acc, d) => acc + (d.exercises?.length || 0), 0)} movements
               </Text>
             </View>
           </View>
@@ -269,7 +273,7 @@ export const WorkoutTabScreen: React.FC = () => {
               </View>
             ) : (
               <View style={styles.restDayCard}>
-                <Text style={styles.restDayEmoji}>🧘</Text>
+                <Icon name="moon" size={32} color={colors.primary} />
                 <Text style={styles.restDayCardTitle}>Scheduled Rest & Neuromuscular Repair</Text>
                 <Text style={styles.restDayCardDesc}>
                   Protein synthesis, nervous system restoration, and glycogen replenishment occur on rest days. Stay hydrated and hit your daily protein target today.
@@ -277,19 +281,19 @@ export const WorkoutTabScreen: React.FC = () => {
 
                 <View style={styles.restPointersBox}>
                   <View style={styles.restPointerRow}>
-                    <Text style={styles.restPointerBullet}>💧</Text>
+                    <Icon name="droplet" size={14} color="#0284C7" />
                     <Text style={styles.restPointer}>
                       Drink 2.5–3.5L water throughout the day for cellular rehydration.
                     </Text>
                   </View>
                   <View style={styles.restPointerRow}>
-                    <Text style={styles.restPointerBullet}>🚶</Text>
+                    <Icon name="activity" size={14} color={colors.primary} />
                     <Text style={styles.restPointer}>
                       Accumulate 5,000–8,000 casual recovery steps to clear metabolic waste.
                     </Text>
                   </View>
                   <View style={styles.restPointerRow}>
-                    <Text style={styles.restPointerBullet}>🥗</Text>
+                    <Icon name="utensils" size={14} color={colors.warning} />
                     <Text style={styles.restPointer}>
                       Maintain protein intake (dal, sattu, eggs, paneer) for tissue rebuilding.
                     </Text>
@@ -307,7 +311,9 @@ export const WorkoutTabScreen: React.FC = () => {
           style={styles.timerQuickLauncher}
         >
           <View style={styles.timerLauncherLeft}>
-            <Text style={styles.timerLauncherIcon}>⏱️</Text>
+            <View style={styles.timerIconContainer}>
+              <Icon name="timer" size={18} color={colors.primaryDark} />
+            </View>
             <View>
               <Text style={styles.timerLauncherTitle}>Inter-Set Rest Timer</Text>
               <Text style={styles.timerLauncherSub}>
@@ -575,8 +581,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
-  timerLauncherIcon: {
-    fontSize: 22,
+  timerIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timerLauncherTitle: {
     ...typography.body,

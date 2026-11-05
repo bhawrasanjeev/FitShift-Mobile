@@ -6,6 +6,8 @@ import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
 import { Badge } from './Badge';
+import { Logo } from './Logo';
+import { Icon } from './Icon';
 
 export interface HeaderProps {
   title?: string;
@@ -13,6 +15,7 @@ export interface HeaderProps {
   showBrand?: boolean;
   rightAction?: React.ReactNode;
   onPressBrand?: () => void;
+  onBack?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,6 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   showBrand = true,
   rightAction,
   onPressBrand,
+  onBack,
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -33,22 +37,33 @@ export const Header: React.FC<HeaderProps> = ({
           disabled={!onPressBrand}
           style={styles.brandRow}
         >
-          {/* FitShift Emerald Dumbbell Logo Pill */}
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoIcon}>🏋️</Text>
+          {/* Official FitShift App Logo */}
+          <View style={styles.logoWrap}>
+            <Logo size={36} />
           </View>
           <View>
             <View style={styles.titleRow}>
               <Text style={styles.brandTitle}>FitShift</Text>
-              <Badge label="Engine" variant="accent" size="sm" />
             </View>
-            <Text style={styles.brandSubtitle}>Routine-first, budget-realistic</Text>
+            <Text style={styles.brandSubtitle}>Routine-first • Indian nutrition</Text>
           </View>
         </TouchableOpacity>
       ) : (
-        <View>
-          {title ? <Text style={styles.pageTitle}>{title}</Text> : null}
-          {subtitle ? <Text style={styles.pageSubtitle}>{subtitle}</Text> : null}
+        <View style={styles.titleArea}>
+          {onBack ? (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onBack}
+              style={styles.backButton}
+              accessibilityLabel="Go back"
+            >
+              <Icon name="arrow-left" size={20} color={colors.textPrimary} />
+            </TouchableOpacity>
+          ) : null}
+          <View style={styles.titleCol}>
+            {title ? <Text style={styles.pageTitle}>{title}</Text> : null}
+            {subtitle ? <Text style={styles.pageSubtitle}>{subtitle}</Text> : null}
+          </View>
         </View>
       )}
 
@@ -73,17 +88,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  logoBadge: {
-    width: 38,
-    height: 38,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoWrap: {
     marginRight: spacing.sm,
-  },
-  logoIcon: {
-    fontSize: 18,
   },
   titleRow: {
     flexDirection: 'row',
@@ -108,6 +114,25 @@ const styles = StyleSheet.create({
   pageSubtitle: {
     fontSize: typography.sizes.xs,
     color: colors.textSecondary,
+  },
+  titleArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surfaceSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  titleCol: {
+    flex: 1,
   },
   rightAction: {
     marginLeft: spacing.md,

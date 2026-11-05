@@ -6,6 +6,7 @@ import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 
 export interface ExpandableCardProps {
   title: string;
@@ -47,7 +48,11 @@ export const ExpandableCard: React.FC<ExpandableCardProps> = ({
         </View>
 
         <View style={[styles.chevronBox, expanded && styles.chevronBoxExpanded]}>
-          <Text style={styles.chevronText}>{expanded ? '▲' : '▼'}</Text>
+          <Icon
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={16}
+            color={colors.textSecondary}
+          />
         </View>
       </TouchableOpacity>
 

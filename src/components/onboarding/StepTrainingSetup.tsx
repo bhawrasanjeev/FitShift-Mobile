@@ -8,6 +8,7 @@ import {
 } from '../../types';
 import { SelectCard } from '../selection/SelectCard';
 import { MultiSelectCard } from '../selection/MultiSelectCard';
+import { Icon } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -94,7 +95,13 @@ export const StepTrainingSetup: React.FC<StepTrainingSetupProps> = ({
               data.environment === 'home' ? styles.envButtonSelected : styles.envButtonUnselected,
             ]}
           >
-            <Text style={styles.envIcon}>🏠</Text>
+            <View style={styles.envIconWrapper}>
+              <Icon
+                name="home"
+                size={22}
+                color={data.environment === 'home' ? colors.primaryDark : colors.textSecondary}
+              />
+            </View>
             <View style={styles.envTextContainer}>
               <Text
                 style={[
@@ -118,7 +125,13 @@ export const StepTrainingSetup: React.FC<StepTrainingSetupProps> = ({
               data.environment === 'gym' ? styles.envButtonSelected : styles.envButtonUnselected,
             ]}
           >
-            <Text style={styles.envIcon}>🏋️</Text>
+            <View style={styles.envIconWrapper}>
+              <Icon
+                name="dumbbell"
+                size={22}
+                color={data.environment === 'gym' ? colors.primaryDark : colors.textSecondary}
+              />
+            </View>
             <View style={styles.envTextContainer}>
               <Text
                 style={[
@@ -333,8 +346,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderColor: colors.border,
   },
-  envIcon: {
-    fontSize: 24,
+  envIconWrapper: {
     marginTop: 2,
   },
   envTextContainer: {

@@ -6,6 +6,7 @@ import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 
 export interface MultiSelectCardProps {
   title: string;
@@ -43,7 +44,7 @@ export const MultiSelectCard: React.FC<MultiSelectCardProps> = ({
       <View style={styles.contentRow}>
         {/* Checkbox Square */}
         <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
-          {selected ? <Text style={styles.checkmark}>✓</Text> : null}
+          {selected ? <Icon name="check" size={12} color={colors.white} strokeWidth={2.5} /> : null}
         </View>
 
         {icon ? <View style={styles.iconContainer}>{icon}</View> : null}

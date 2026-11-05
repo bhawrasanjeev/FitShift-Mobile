@@ -4,6 +4,7 @@ import { DailyRhythm, Occupation, ActivityLevel } from '../../types';
 import { SelectCard } from '../selection/SelectCard';
 import { NumberInput } from '../selection/NumberInput';
 import { OptionChip } from '../selection/OptionChip';
+import { Icon, IconName } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -18,13 +19,13 @@ export const StepDailyRhythm: React.FC<StepDailyRhythmProps> = ({
   data,
   onChange,
 }) => {
-  const occupations: { id: Occupation; label: string; icon: string }[] = [
-    { id: 'student', label: 'Student', icon: '🎓' },
-    { id: 'working_professional', label: 'Working Professional', icon: '💼' },
-    { id: 'homemaker', label: 'Homemaker', icon: '🏡' },
-    { id: 'business_owner', label: 'Business Owner', icon: '🏢' },
-    { id: 'freelancer', label: 'Freelancer', icon: '💻' },
-    { id: 'other', label: 'Other Rhythm', icon: '🧭' },
+  const occupations: { id: Occupation; label: string; icon: IconName }[] = [
+    { id: 'student', label: 'Student', icon: 'graduation-cap' },
+    { id: 'working_professional', label: 'Working Professional', icon: 'briefcase' },
+    { id: 'homemaker', label: 'Homemaker', icon: 'home' },
+    { id: 'business_owner', label: 'Business Owner', icon: 'building' },
+    { id: 'freelancer', label: 'Freelancer', icon: 'laptop' },
+    { id: 'other', label: 'Other Rhythm', icon: 'compass' },
   ];
 
   const activityLevels: { id: ActivityLevel; title: string; desc: string; badge: string }[] = [
@@ -79,7 +80,11 @@ export const StepDailyRhythm: React.FC<StepDailyRhythmProps> = ({
                   isSelected ? styles.occupationCardSelected : styles.occupationCardUnselected,
                 ]}
               >
-                <Text style={styles.occupationIcon}>{item.icon}</Text>
+                <Icon
+                  name={item.icon}
+                  size={20}
+                  color={isSelected ? colors.primaryDark : colors.textSecondary}
+                />
                 <Text
                   style={[
                     styles.occupationText,
@@ -246,9 +251,6 @@ const styles = StyleSheet.create({
   occupationCardUnselected: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-  },
-  occupationIcon: {
-    fontSize: 18,
   },
   occupationText: {
     ...typography.bodySmall,

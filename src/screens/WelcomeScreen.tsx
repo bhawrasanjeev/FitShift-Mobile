@@ -9,6 +9,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
+import { Logo } from '../components/common/Logo';
+import { Icon, IconName } from '../components/common/Icon';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
@@ -31,11 +33,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const { hasPlan, plan } = usePlan();
   const insets = useSafeAreaInsets();
 
-  const trustPoints = [
-    { icon: '🛡️', title: 'No login required', desc: 'Planning, not tracking. Zero account wall.' },
-    { icon: '🍛', title: 'Indian grocery economics', desc: 'Sattu, Kala Chana, Moong, Paneer, Curd.' },
-    { icon: '🏠', title: 'Home & Gym ready', desc: 'Strict bodyweight to full commercial gym.' },
-    { icon: '⏱️', title: 'Real-world schedules', desc: 'Syncs to office commute & shift timings.' },
+  const trustPoints: { iconName: IconName; title: string; desc: string }[] = [
+    { iconName: 'shield', title: 'No login required', desc: 'Planning, not tracking. Zero account wall.' },
+    { iconName: 'leaf', title: 'Indian grocery economics', desc: 'Sattu, Kala Chana, Moong, Paneer, Curd.' },
+    { iconName: 'dumbbell', title: 'Home & Gym ready', desc: 'Strict bodyweight to full commercial gym.' },
+    { iconName: 'clock', title: 'Real-world schedules', desc: 'Syncs to office commute & shift timings.' },
   ];
 
   return (
@@ -51,15 +53,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <View style={styles.heroSection}>
         {/* Tagline Badge */}
         <View style={styles.taglineBadge}>
-          <Text style={styles.sparkleIcon}>✨</Text>
+          <Icon name="sparkles" size={13} color={colors.primaryDark} />
           <Text style={styles.taglineText}>ROUTINE-FIRST, BUDGET-REALISTIC FITNESS</Text>
         </View>
 
         {/* Brand Logo & Name */}
         <View style={styles.brandRow}>
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoIcon}>🏋️</Text>
-          </View>
+          <Logo size={46} />
           <View>
             <View style={styles.titleWithBadge}>
               <Text style={styles.brandTitle}>FitShift</Text>
@@ -84,7 +84,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <View style={styles.activePlanBanner}>
             <View style={styles.activePlanHeader}>
               <View style={styles.activePlanTitleRow}>
-                <Text style={styles.activePlanIcon}>📋</Text>
+                <Icon name="check-circle" size={18} color={colors.primary} />
                 <Text style={styles.activePlanTitle}>Active Plan Ready</Text>
               </View>
               <Badge
@@ -140,7 +140,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <View style={styles.pillarsGrid}>
           {trustPoints.map((point, index) => (
             <View key={index} style={styles.pillarCard}>
-              <Text style={styles.pillarIcon}>{point.icon}</Text>
+              <View style={styles.pillarIconContainer}>
+                <Icon name={point.iconName} size={20} color={colors.primary} />
+              </View>
               <View style={styles.pillarTextCol}>
                 <Text style={styles.pillarTitle}>{point.title}</Text>
                 <Text style={styles.pillarDesc}>{point.desc}</Text>
@@ -154,19 +156,14 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <View style={styles.previewSection}>
         <View style={styles.previewCard}>
           <View style={styles.previewHeader}>
-            <View style={styles.browserDots}>
-              <View style={[styles.dot, styles.dotRed]} />
-              <View style={[styles.dot, styles.dotYellow]} />
-              <View style={[styles.dot, styles.dotGreen]} />
-              <Text style={styles.browserUrl}>fitshift.engine/live</Text>
-            </View>
+            <Text style={styles.previewHeaderTitle}>SAMPLE GENERATED BLUEPRINT</Text>
             <Badge label="Home • 45m • Pure Veg • ₹65/day" variant="accent" size="sm" />
           </View>
 
           {/* Workout Sample Row */}
           <View style={styles.previewItem}>
             <View style={styles.previewItemHeader}>
-              <Text style={styles.previewItemCategory}>DAY 1 PUSH SESSION</Text>
+              <Text style={styles.previewItemCategory}>PUSH ROUTINE</Text>
               <Text style={styles.previewItemRest}>60s rest</Text>
             </View>
             <Text style={styles.previewItemName}>Controlled Tempo Push-Ups</Text>
@@ -178,7 +175,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           {/* Diet Sample Row */}
           <View style={styles.previewItem}>
             <View style={styles.previewItemHeader}>
-              <Text style={styles.previewItemCategoryDiet}>BREAKFAST ARCHITECTURE</Text>
+              <Text style={styles.previewItemCategoryDiet}>HIGH-PROTEIN BREAKFAST</Text>
               <Text style={styles.previewItemCost}>₹18 • 21g Pro</Text>
             </View>
             <Text style={styles.previewItemName}>Chana Sattu Buttermilk & Moong Sprouts</Text>
@@ -186,40 +183,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               40g Sattu, 200ml Curd Chaas, 50g Sprouted Moong
             </Text>
           </View>
-        </View>
-      </View>
-
-      {/* Developer Utilities & Showcase Shortcuts */}
-      <View style={styles.devSection}>
-        <Text style={styles.devHeader}>DEVELOPER TOOLS & AUDIT</Text>
-        <View style={styles.devButtonsRow}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={onViewActivePlan}
-            style={styles.devButton}
-          >
-            <Text style={styles.devButtonText}>🏠 Main Dashboard</Text>
-          </TouchableOpacity>
-
-          {onOpenShowcase ? (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onOpenShowcase}
-              style={styles.devButton}
-            >
-              <Text style={styles.devButtonText}>🎨 Showcase</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {onOpenApiConsole ? (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onOpenApiConsole}
-              style={styles.devButton}
-            >
-              <Text style={styles.devButtonText}>🔌 API Console</Text>
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
     </ScrollView>
@@ -253,9 +216,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
-  sparkleIcon: {
-    fontSize: 12,
-  },
   taglineText: {
     ...typography.caption,
     fontWeight: '700',
@@ -268,19 +228,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     marginTop: spacing.xs,
-  },
-  logoBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.primaryLight,
-    borderColor: colors.accentBorder,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: {
-    fontSize: 24,
   },
   titleWithBadge: {
     flexDirection: 'row',
@@ -397,9 +344,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     padding: spacing.md,
   },
-  pillarIcon: {
-    fontSize: 22,
-    marginTop: 2,
+  pillarIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pillarTextCol: {
     flex: 1,
@@ -434,25 +385,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.borderSubtle,
     borderBottomWidth: 1,
   },
-  browserDots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  dotRed: { backgroundColor: '#F87171' },
-  dotYellow: { backgroundColor: '#FBBF24' },
-  dotGreen: { backgroundColor: '#34D399' },
-  browserUrl: {
+  previewHeaderTitle: {
     ...typography.caption,
     fontSize: 10,
-    color: colors.textMuted,
-    marginLeft: spacing.xs,
-    fontFamily: 'monospace',
+    fontWeight: '700',
+    color: colors.textSecondary,
+    letterSpacing: 0.6,
   },
   previewItem: {
     backgroundColor: colors.backgroundSecondary,
@@ -496,42 +434,6 @@ const styles = StyleSheet.create({
   },
   previewItemSub: {
     ...typography.caption,
-    color: colors.textSecondary,
-    fontSize: 11,
-  },
-  devSection: {
-    gap: spacing.xs,
-    marginTop: spacing.sm,
-    paddingTop: spacing.md,
-    borderTopColor: colors.borderSubtle,
-    borderTopWidth: 1,
-  },
-  devHeader: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.textMuted,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    fontSize: 10,
-    textAlign: 'center',
-  },
-  devButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xxs,
-  },
-  devButton: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  devButtonText: {
-    ...typography.caption,
-    fontWeight: '600',
     color: colors.textSecondary,
     fontSize: 11,
   },

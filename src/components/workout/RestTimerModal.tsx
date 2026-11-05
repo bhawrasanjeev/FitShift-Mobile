@@ -11,6 +11,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
+import { Icon } from '../common/Icon';
 
 export interface RestTimerModalProps {
   visible: boolean;
@@ -144,7 +145,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
               onPress={onClose}
               style={styles.closeButton}
             >
-              <Text style={styles.closeIcon}>✕</Text>
+              <Icon name="x" size={16} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -169,7 +170,7 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
             {/* Status Text */}
             <Text style={[styles.timerStatus, isCompleted && styles.timerStatusCompleted]}>
               {isCompleted
-                ? '🎉 Rest Finished! Ready for next set'
+                ? 'Rest Finished! Ready for next set'
                 : isRunning
                 ? 'Heart rate & nervous system restoring'
                 : 'Timer Paused'}
@@ -194,9 +195,11 @@ export const RestTimerModal: React.FC<RestTimerModalProps> = ({
                 isCompleted ? styles.mainActionButtonSuccess : isRunning ? styles.mainActionButtonPause : styles.mainActionButtonPlay,
               ]}
             >
-              <Text style={styles.mainActionIcon}>
-                {isCompleted ? '🔄' : isRunning ? '⏸' : '▶'}
-              </Text>
+              <Icon
+                name={isCompleted ? 'refresh' : isRunning ? 'timer' : 'check'}
+                size={18}
+                color="#FFFFFF"
+              />
               <Text style={styles.mainActionText}>
                 {isCompleted ? 'Repeat Rest' : isRunning ? 'Pause' : 'Resume'}
               </Text>
@@ -311,11 +314,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeIcon: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '700',
-  },
   timerCard: {
     backgroundColor: colors.surfaceSubtle,
     borderRadius: borderRadius.xl,
@@ -405,10 +403,6 @@ const styles = StyleSheet.create({
   },
   mainActionButtonSuccess: {
     backgroundColor: colors.primary,
-  },
-  mainActionIcon: {
-    fontSize: 16,
-    color: colors.textInverse,
   },
   mainActionText: {
     ...typography.body,

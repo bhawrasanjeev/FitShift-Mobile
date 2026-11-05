@@ -14,3 +14,5 @@ export * from './IconButton';
 export * from './Avatar';
 export * from './Toast';
 export * from './OfflineStatusBanner';
+export * from './Icon';
+export * from './Logo';

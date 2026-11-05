@@ -4,6 +4,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
+import { Icon } from '../common/Icon';
 
 export interface SearchBarProps {
   value: string;
@@ -22,7 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   return (
     <View style={[styles.container, style]}>
-      <Text style={styles.searchIcon}>🔍</Text>
+      <Icon name="search" size={16} color={colors.textMuted} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -40,7 +41,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           }}
           style={styles.clearButton}
         >
-          <Text style={styles.clearText}>✕</Text>
+          <Icon name="x" size={14} color={colors.textSecondary} />
         </TouchableOpacity>
       ) : null}
     </View>

@@ -15,6 +15,7 @@ import {
   Avatar,
   Toast,
   OfflineStatusBanner,
+  Icon,
 } from '../components/common';
 import {
   SelectCard,
@@ -143,7 +144,7 @@ export const DesignSystemShowcase: React.FC<DesignSystemShowcaseProps> = ({ onBa
           <View style={styles.headerRight}>
             {onBack ? (
               <Button
-                title="← Back"
+                title="Back"
                 variant="outline"
                 size="sm"
                 onPress={onBack}
@@ -151,7 +152,7 @@ export const DesignSystemShowcase: React.FC<DesignSystemShowcaseProps> = ({ onBa
             ) : null}
             <Avatar name="Aarav Sharma" size="sm" variant="emerald" />
             <IconButton
-              icon={<Text style={{ fontSize: 16 }}>🔔</Text>}
+              icon={<Icon name="sparkles" size={16} color={colors.textPrimary} />}
               size="sm"
               variant="surface"
               badge

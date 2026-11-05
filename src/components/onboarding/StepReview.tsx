@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { OnboardingData } from '../../types';
 import { Button } from '../common/Button';
+import { Icon, IconName } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -42,11 +43,16 @@ export const StepReview: React.FC<StepReviewProps> = ({
     other: 'General Schedule',
   };
 
-  const cards = [
+  const cards: {
+    step: number;
+    title: string;
+    icon: IconName;
+    items: { label: string; value: string }[];
+  }[] = [
     {
       step: 1,
       title: 'Personal Basics & Goal',
-      icon: '👤',
+      icon: 'user',
       items: [
         { label: 'Name', value: data.personal.name || 'FitShift Member' },
         {
@@ -62,7 +68,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
     {
       step: 2,
       title: 'Daily Rhythm & Schedule',
-      icon: '⏱️',
+      icon: 'clock',
       items: [
         { label: 'Routine', value: occNames[data.rhythm.occupation] || data.rhythm.occupation },
         {
@@ -78,7 +84,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
     {
       step: 3,
       title: 'Training Setup',
-      icon: '🏋️',
+      icon: 'dumbbell',
       items: [
         {
           label: 'Environment',
@@ -97,7 +103,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
     {
       step: 4,
       title: 'Nutrition & Kitchen Setup',
-      icon: '🥗',
+      icon: 'utensils',
       items: [
         { label: 'Diet Type', value: dietNames[data.food.dietType] },
         {
@@ -113,7 +119,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
     {
       step: 5,
       title: 'Daily Food Budget',
-      icon: '💰',
+      icon: 'wallet',
       items: [
         { label: 'Tier', value: data.budget.tier.replace('_', ' ').toUpperCase() },
         {
@@ -125,7 +131,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
     {
       step: 6,
       title: 'Supplement Preference',
-      icon: '💊',
+      icon: 'pill',
       items: [
         {
           label: 'Preference',
@@ -144,11 +150,11 @@ export const StepReview: React.FC<StepReviewProps> = ({
     <View style={styles.container}>
       {/* Intro Notice */}
       <View style={styles.introBox}>
-        <Text style={styles.introIcon}>✨</Text>
+        <Icon name="sparkles" size={20} color={colors.primary} />
         <View style={styles.introTextCol}>
           <Text style={styles.introTitle}>Ready to construct your plan</Text>
           <Text style={styles.introSub}>
-            Verify your lifestyle parameters below. Tap &ldquo;Edit&rdquo; on any section to make adjustments, then generate your plan.
+            Verify your parameters below. Tap Edit on any section to make adjustments, then generate your plan.
           </Text>
         </View>
       </View>
@@ -159,7 +165,7 @@ export const StepReview: React.FC<StepReviewProps> = ({
           <View key={card.step} style={styles.card}>
             <View style={styles.cardHeader}>
               <View style={styles.cardTitleRow}>
-                <Text style={styles.cardIcon}>{card.icon}</Text>
+                <Icon name={card.icon} size={16} color={colors.primary} />
                 <Text style={styles.cardTitle}>{card.title}</Text>
               </View>
 
@@ -168,7 +174,8 @@ export const StepReview: React.FC<StepReviewProps> = ({
                 onPress={() => onEditStep(card.step)}
                 style={styles.editButton}
               >
-                <Text style={styles.editText}>✏️ Edit</Text>
+                <Icon name="edit" size={12} color={colors.primaryDark} />
+                <Text style={styles.editText}>Edit</Text>
               </TouchableOpacity>
             </View>
 
@@ -196,9 +203,12 @@ export const StepReview: React.FC<StepReviewProps> = ({
           loading={isGenerating}
           style={styles.generateButton}
         />
-        <Text style={styles.guaranteeText}>
-          🔒 Zero login barrier • Instant offline storage • Built for Indian routines
-        </Text>
+        <View style={styles.guaranteeRow}>
+          <Icon name="shield" size={13} color={colors.textMuted} />
+          <Text style={styles.guaranteeText}>
+            Zero login barrier • Instant offline storage • Built for Indian routines
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -217,10 +227,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: borderRadius.xl,
     padding: spacing.md,
-  },
-  introIcon: {
-    fontSize: 22,
-    marginTop: 2,
   },
   introTextCol: {
     flex: 1,
@@ -260,15 +266,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
-  cardIcon: {
-    fontSize: 16,
-  },
   cardTitle: {
     ...typography.bodySmall,
     fontWeight: '700',
     color: colors.textPrimary,
   },
   editButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xxs,
     borderRadius: borderRadius.sm,
@@ -307,6 +313,11 @@ const styles = StyleSheet.create({
   },
   generateButton: {
     width: '100%',
+  },
+  guaranteeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   guaranteeText: {
     ...typography.caption,

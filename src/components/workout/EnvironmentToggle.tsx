@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { TrainingEnvironment } from '../../types';
+import { Icon } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -39,7 +40,11 @@ export const EnvironmentToggle: React.FC<EnvironmentToggleProps> = ({
           onPress={() => onEnvironmentChange('home')}
           style={[styles.segment, isHome && styles.segmentActive]}
         >
-          <Text style={styles.segmentIcon}>🏠</Text>
+          <Icon
+            name="home"
+            size={16}
+            color={isHome ? colors.primaryDark : colors.textMuted}
+          />
           <Text style={[styles.segmentLabel, isHome && styles.segmentLabelActive]}>
             Home Setup
           </Text>
@@ -51,7 +56,11 @@ export const EnvironmentToggle: React.FC<EnvironmentToggleProps> = ({
           onPress={() => onEnvironmentChange('gym')}
           style={[styles.segment, !isHome && styles.segmentActive]}
         >
-          <Text style={styles.segmentIcon}>🏢</Text>
+          <Icon
+            name="building"
+            size={16}
+            color={!isHome ? colors.primaryDark : colors.textMuted}
+          />
           <Text style={[styles.segmentLabel, !isHome && styles.segmentLabelActive]}>
             Commercial Gym
           </Text>
@@ -111,9 +120,6 @@ const styles = StyleSheet.create({
     ...shadows.sm,
     borderWidth: 1,
     borderColor: colors.borderSubtle,
-  },
-  segmentIcon: {
-    fontSize: 16,
   },
   segmentLabel: {
     fontSize: typography.sizes.sm,

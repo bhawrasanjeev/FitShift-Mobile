@@ -20,23 +20,26 @@ import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
 import { borderRadius } from '../theme/borderRadius';
+import { Icon, IconName } from '../components/common';
 
 export interface MainTabNavigatorProps {
   onBackToWelcome?: () => void;
+  onOpenProfile?: () => void;
 }
 
 export const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
   onBackToWelcome,
+  onOpenProfile,
 }) => {
   const { activeTab, setActiveTab } = usePlan();
   const insets = useSafeAreaInsets();
 
-  const tabs: { id: MainNavTab; label: string; icon: string }[] = [
-    { id: 'overview', label: 'Overview', icon: '🏠' },
-    { id: 'workout', label: 'Workout', icon: '🏋️' },
-    { id: 'diet', label: 'Diet', icon: '🥗' },
-    { id: 'schedule', label: 'Schedule', icon: '⏱️' },
-    { id: 'ai', label: 'AI Coach', icon: '🤖' },
+  const tabs: { id: MainNavTab; label: string; iconName: IconName }[] = [
+    { id: 'overview', label: 'Overview', iconName: 'home' },
+    { id: 'workout', label: 'Workout', iconName: 'dumbbell' },
+    { id: 'diet', label: 'Diet', iconName: 'utensils' },
+    { id: 'schedule', label: 'Schedule', iconName: 'clock' },
+    { id: 'ai', label: 'AI Coach', iconName: 'bot' },
   ];
 
   // Android hardware back button handler
@@ -72,6 +75,7 @@ export const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
           <OverviewScreen
             onNavigateTab={handleTabPress}
             onResetPlan={onBackToWelcome}
+            onOpenProfile={onOpenProfile}
           />
         )}
         {activeTab === 'workout' && <WorkoutTabScreen />}
@@ -104,7 +108,11 @@ export const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
                   isActive && styles.tabIconContainerActive,
                 ]}
               >
-                <Text style={styles.tabIcon}>{tab.icon}</Text>
+                <Icon
+                  name={tab.iconName}
+                  size={20}
+                  color={isActive ? colors.primaryDark : colors.textMuted}
+                />
               </View>
               <Text
                 style={[
@@ -159,9 +167,6 @@ const styles = StyleSheet.create({
   },
   tabIconContainerActive: {
     backgroundColor: colors.primaryLight,
-  },
-  tabIcon: {
-    fontSize: 18,
   },
   tabLabel: {
     ...typography.caption,

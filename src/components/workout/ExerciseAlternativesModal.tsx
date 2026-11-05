@@ -14,6 +14,7 @@ import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 
 export interface ExerciseAlternativesModalProps {
   visible: boolean;
@@ -52,7 +53,7 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
               onPress={onClose}
               style={styles.closeButton}
             >
-              <Text style={styles.closeIcon}>✕</Text>
+              <Icon name="x" size={16} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -62,7 +63,7 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
             showsVerticalScrollIndicator={false}
           >
             <Text style={styles.explanationText}>
-              FitShift pairs each programmed movement with a biomechanically balanced alternative sharing target muscle recruitment, volume structure, and equipment level.
+              Select a biomechanically balanced alternative sharing target muscle recruitment and volume structure.
             </Text>
 
             {/* Current Exercise Preview */}
@@ -81,7 +82,7 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
                   />
                 ) : (
                   <View style={styles.thumbnailFallback}>
-                    <Text style={styles.fallbackIcon}>🏋️</Text>
+                    <Icon name="dumbbell" size={22} color={colors.textMuted} />
                   </View>
                 )}
 
@@ -106,7 +107,8 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
             <View style={styles.swapIndicatorRow}>
               <View style={styles.swapLine} />
               <View style={styles.swapBadge}>
-                <Text style={styles.swapBadgeText}>⇄ DIRECT REPLACEMENT</Text>
+                <Icon name="refresh" size={12} color={colors.primaryDark} />
+                <Text style={styles.swapBadgeText}>DIRECT REPLACEMENT</Text>
               </View>
               <View style={styles.swapLine} />
             </View>
@@ -127,7 +129,7 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
                   />
                 ) : (
                   <View style={styles.thumbnailFallback}>
-                    <Text style={styles.fallbackIcon}>✨</Text>
+                    <Icon name="sparkles" size={22} color={colors.primary} />
                   </View>
                 )}
 
@@ -148,9 +150,9 @@ export const ExerciseAlternativesModal: React.FC<ExerciseAlternativesModalProps>
 
             {/* Benefit callout */}
             <View style={styles.benefitBox}>
-              <Text style={styles.benefitIcon}>💡</Text>
+              <Icon name="sparkles" size={14} color={colors.primaryDark} />
               <Text style={styles.benefitText}>
-                Swapping will preserve your programmed sets, reps, and target muscle load without altering the rest of your 7-day routine. You can revert this swap at any time.
+                Swapping preserves your programmed sets, reps, and target load. Reversible at any time.
               </Text>
             </View>
           </ScrollView>
@@ -283,9 +285,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  fallbackIcon: {
-    fontSize: 24,
   },
   cardDetails: {
     flex: 1,

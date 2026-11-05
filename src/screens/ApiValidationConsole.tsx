@@ -361,7 +361,7 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
         {/* Master Test Actions */}
         <View style={styles.masterActions}>
           <Button
-            title="⚡ Run All 8 Backend Tests"
+            title="Run All 8 Backend Tests"
             onPress={runAllTests}
             variant="primary"
             size="md"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, BackHandler } from 'react-native';
 import { usePlan } from '../context/PlanContext';
 import { OnboardingData } from '../types';
@@ -9,6 +9,7 @@ import { MainTabNavigator } from './MainTabNavigator';
 import { DesignSystemShowcase } from '../screens/DesignSystemShowcase';
 import { ApiValidationConsole } from '../screens/ApiValidationConsole';
 import { LoadingState } from '../components/common/LoadingState';
+import { ProfileScreen, SettingsScreen } from '../screens/Profile';
 import { colors } from '../theme/colors';
 
 export type RootScreen =
@@ -17,7 +18,9 @@ export type RootScreen =
   | 'generating'
   | 'main'
   | 'showcase'
-  | 'api_console';
+  | 'api_console'
+  | 'profile'
+  | 'settings';
 
 export const RootNavigator: React.FC = () => {
   const { hasPlan, isInitializing, userProfile } = usePlan();
@@ -35,6 +38,14 @@ export const RootNavigator: React.FC = () => {
   // Handle hardware back for sub-screens
   useEffect(() => {
     const handleHardwareBackPress = () => {
+      if (currentScreen === 'settings') {
+        setCurrentScreen('profile');
+        return true;
+      }
+      if (currentScreen === 'profile') {
+        setCurrentScreen('main');
+        return true;
+      }
       if (currentScreen === 'showcase' || currentScreen === 'api_console') {
         setCurrentScreen(previousScreen);
         return true;
@@ -50,6 +61,38 @@ export const RootNavigator: React.FC = () => {
     return () => sub.remove();
   }, [currentScreen, previousScreen]);
 
+  const navigateTo = useCallback((screen: RootScreen) => {
+    setCurrentScreen((curr) => {
+      setPreviousScreen(curr);
+      return screen;
+    });
+  }, []);
+
+  const handleStartOnboarding = useCallback(() => {
+    navigateTo('onboarding');
+  }, [navigateTo]);
+
+  const handleCancelOnboarding = useCallback(() => {
+    navigateTo('welcome');
+  }, [navigateTo]);
+
+  const handleCompleteOnboarding = useCallback((data: OnboardingData) => {
+    setPendingOnboardingData(data);
+    navigateTo('generating');
+  }, [navigateTo]);
+
+  const handleGenerationSuccess = useCallback(() => {
+    navigateTo('main');
+  }, [navigateTo]);
+
+  const handleGenerationCancel = useCallback(() => {
+    navigateTo('onboarding');
+  }, [navigateTo]);
+
+  const handleResetPlan = useCallback(() => {
+    navigateTo('welcome');
+  }, [navigateTo]);
+
   if (isInitializing) {
     return (
       <View style={styles.loadingContainer}>
@@ -57,36 +100,6 @@ export const RootNavigator: React.FC = () => {
       </View>
     );
   }
-
-  const navigateTo = (screen: RootScreen) => {
-    setPreviousScreen(currentScreen);
-    setCurrentScreen(screen);
-  };
-
-  const handleStartOnboarding = () => {
-    navigateTo('onboarding');
-  };
-
-  const handleCancelOnboarding = () => {
-    navigateTo('welcome');
-  };
-
-  const handleCompleteOnboarding = (data: OnboardingData) => {
-    setPendingOnboardingData(data);
-    navigateTo('generating');
-  };
-
-  const handleGenerationSuccess = () => {
-    navigateTo('main');
-  };
-
-  const handleGenerationCancel = () => {
-    navigateTo('onboarding');
-  };
-
-  const handleResetPlan = () => {
-    navigateTo('welcome');
-  };
 
   return (
     <View style={styles.container}>
@@ -116,7 +129,28 @@ export const RootNavigator: React.FC = () => {
       )}
 
       {currentScreen === 'main' && (
-        <MainTabNavigator onBackToWelcome={handleResetPlan} />
+        <MainTabNavigator
+          onBackToWelcome={handleResetPlan}
+          onOpenProfile={() => navigateTo('profile')}
+        />
+      )}
+
+      {currentScreen === 'profile' && (
+        <View style={styles.subScreenContainer}>
+          <ProfileScreen
+            onBack={() => navigateTo('main')}
+            onOpenSettings={() => navigateTo('settings')}
+          />
+        </View>
+      )}
+
+      {currentScreen === 'settings' && (
+        <View style={styles.subScreenContainer}>
+          <SettingsScreen
+            onBack={() => navigateTo('profile')}
+            onResetPlan={handleResetPlan}
+          />
+        </View>
       )}
 
       {currentScreen === 'showcase' && (

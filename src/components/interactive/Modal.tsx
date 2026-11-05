@@ -13,6 +13,7 @@ import { typography } from '../../theme/typography';
 import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
+import { Icon } from '../common/Icon';
 
 export interface ModalProps {
   visible: boolean;
@@ -45,34 +46,35 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={[styles.dialogContainer, style]}>
-              {/* Header */}
-              {title ? (
-                <View style={styles.headerRow}>
-                  <View style={styles.titleWrapper}>
-                    <Text style={styles.title}>{title}</Text>
-                    {displayDescription ? (
-                      <Text style={styles.description}>{displayDescription}</Text>
-                    ) : null}
-                  </View>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={onClose}
-                    style={styles.closeButton}
-                  >
-                    <Text style={styles.closeText}>✕</Text>
-                  </TouchableOpacity>
+          <View
+            style={[styles.dialogContainer, style]}
+            onStartShouldSetResponder={() => true}
+          >
+            {/* Header */}
+            {title ? (
+              <View style={styles.headerRow}>
+                <View style={styles.titleWrapper}>
+                  <Text style={styles.title}>{title}</Text>
+                  {displayDescription ? (
+                    <Text style={styles.description}>{displayDescription}</Text>
+                  ) : null}
                 </View>
-              ) : null}
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={onClose}
+                  style={styles.closeButton}
+                >
+                  <Icon name="x" size={16} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
+            ) : null}
 
-              {/* Body */}
-              <View style={styles.body}>{children}</View>
+            {/* Body */}
+            <View style={styles.body}>{children}</View>
 
-              {/* Footer */}
-              {footer ? <View style={styles.footer}>{footer}</View> : null}
-            </View>
-          </TouchableWithoutFeedback>
+            {/* Footer */}
+            {footer ? <View style={styles.footer}>{footer}</View> : null}
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </RNModal>

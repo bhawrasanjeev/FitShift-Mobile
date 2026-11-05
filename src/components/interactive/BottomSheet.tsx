@@ -13,6 +13,7 @@ import { typography } from '../../theme/typography';
 import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
+import { Icon } from '../common/Icon';
 
 export interface BottomSheetProps {
   visible: boolean;
@@ -61,7 +62,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
                     onPress={onClose}
                     style={styles.closeButton}
                   >
-                    <Text style={styles.closeText}>✕</Text>
+                    <Icon name="x" size={16} color={colors.textSecondary} />
                   </TouchableOpacity>
                 </View>
               ) : null}

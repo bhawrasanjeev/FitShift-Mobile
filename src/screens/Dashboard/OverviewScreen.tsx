@@ -10,6 +10,8 @@ import { usePlan, MainNavTab } from '../../context/PlanContext';
 import { Header } from '../../components/common/Header';
 import { Badge } from '../../components/common/Badge';
 import { Button } from '../../components/common/Button';
+import { Icon } from '../../components/common/Icon';
+import { Avatar } from '../../components/common/Avatar';
 import { StatCard } from '../../components/fitness/StatCard';
 import { LateTiredModal } from '../../components/interactive/LateTiredModal';
 import { EditPlanModal } from '../../components/interactive/EditPlanModal';
@@ -22,11 +24,13 @@ import { borderRadius } from '../../theme/borderRadius';
 export interface OverviewScreenProps {
   onNavigateTab: (tab: MainNavTab) => void;
   onResetPlan?: () => void;
+  onOpenProfile?: () => void;
 }
 
 export const OverviewScreen: React.FC<OverviewScreenProps> = ({
   onNavigateTab,
   onResetPlan,
+  onOpenProfile,
 }) => {
   const {
     plan,
@@ -44,7 +48,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
       <View style={styles.screen}>
         <Header showBrand={true} />
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>🏋️</Text>
+          <Icon name="dumbbell" size={48} color={colors.primary} />
           <Text style={styles.greetingTitle}>No Plan Generated Yet</Text>
           <Text style={styles.greetingSub}>
             Complete the 7-step questionnaire to generate your tailored Indian routine and budget-realistic nutrition plan.
@@ -83,6 +87,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
     <View style={styles.screen}>
       <Header
         showBrand={true}
+        onPressBrand={onOpenProfile}
         rightAction={
           <View style={styles.headerRight}>
             <TouchableOpacity
@@ -93,7 +98,11 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
                 isLateTiredActive && styles.lateTiredPillActive,
               ]}
             >
-              <Text style={styles.lateTiredIcon}>🌙</Text>
+              <Icon
+                name="moon"
+                size={13}
+                color={isLateTiredActive ? '#B45309' : colors.textSecondary}
+              />
               <Text
                 style={[
                   styles.lateTiredText,
@@ -109,7 +118,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               onPress={() => setIsEditPlanModalOpen(true)}
               style={styles.editPlanBtn}
             >
-              <Text style={styles.editPlanIcon}>✏️</Text>
+              <Icon name="edit" size={15} color={colors.textSecondary} />
             </TouchableOpacity>
 
             {onResetPlan ? (
@@ -118,7 +127,18 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
                 onPress={onResetPlan}
                 style={styles.editPlanBtn}
               >
-                <Text style={styles.editPlanIcon}>🔄</Text>
+                <Icon name="refresh" size={15} color={colors.textSecondary} />
+              </TouchableOpacity>
+            ) : null}
+
+            {onOpenProfile ? (
+              <TouchableOpacity
+                activeOpacity={0.75}
+                onPress={onOpenProfile}
+                style={styles.profileAvatarBtn}
+                accessibilityLabel="Open Profile & Settings"
+              >
+                <Avatar name={userName} size="sm" variant="emerald" />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -136,7 +156,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
             <View style={styles.heroGreetingCol}>
               <View style={styles.statusBadgeRow}>
                 <Badge
-                  label="Deterministic Routine Ready"
+                  label={goalTitles[userProfile.personal.goal] || 'Custom Routine'}
                   variant="accent"
                   size="sm"
                 />
@@ -169,7 +189,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
             <View style={styles.metricItem}>
               <Text style={styles.metricItemLabel}>ENVIRONMENT</Text>
               <Text style={styles.metricItemValue}>
-                {userProfile.training.environment === 'home' ? '🏠 Home Workouts' : '🏋️ Commercial Gym'}
+                {userProfile.training.environment === 'home' ? 'Home Workouts' : 'Commercial Gym'}
               </Text>
             </View>
 
@@ -182,6 +202,21 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               </Text>
             </View>
           </View>
+
+          {/* Profile & Settings Shortcut */}
+          {onOpenProfile && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onOpenProfile}
+              style={styles.profileBannerLink}
+            >
+              <View style={styles.profileBannerLeft}>
+                <Icon name="user" size={13} color={colors.primaryDark} />
+                <Text style={styles.profileBannerText}>View Full Profile & App Settings</Text>
+              </View>
+              <Icon name="chevron-right" size={13} color={colors.primaryDark} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Nutrition Target Highlights (Planned, Not Tracked) */}
@@ -196,14 +231,14 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               title="Calorie Target"
               value={nutrition.calorieTarget}
               unit="kcal / day"
-              icon={<Text style={{ fontSize: 18 }}>🔥</Text>}
+              icon={<Icon name="fire" size={18} color="#EA580C" />}
               style={styles.statCard}
             />
             <StatCard
               title="Daily Protein"
               value={nutrition.proteinTargetGrams}
               unit="g minimum"
-              icon={<Text style={{ fontSize: 18 }}>💪</Text>}
+              icon={<Icon name="activity" size={18} color={colors.primary} />}
               style={styles.statCard}
             />
           </View>
@@ -278,7 +313,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               </>
             ) : (
               <View style={styles.restDayBox}>
-                <Text style={styles.restDayIcon}>🧘</Text>
+                <Icon name="moon" size={32} color={colors.primary} />
                 <Text style={styles.restDayTitle}>Scheduled Active Recovery Day</Text>
                 <Text style={styles.restDayDesc}>
                   Your muscles adapt and grow during rest. Focus on walking, mobility, hydration, and restful sleep tonight.
@@ -314,11 +349,11 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
                   {diet.foods?.length || 0} Allocated Indian Staples
                 </Text>
                 <Text style={styles.dietAllocatedSub}>
-                  ₹{diet.budget?.estimatedCost || userProfile.budget.dailyBudgetRupees} daily spend • 50g soya chunks cap
+                  ₹{diet.budget?.estimatedCost || userProfile.budget.dailyBudgetRupees} daily spend
                 </Text>
               </View>
               <Badge
-                label={diet.feasible ? '✓ Budget Feasible' : 'Exceeds Target'}
+                label={diet.feasible ? 'Budget Feasible' : 'Exceeds Target'}
                 variant={diet.feasible ? 'accent' : 'warning'}
                 size="sm"
               />
@@ -402,7 +437,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               onPress={() => onNavigateTab('workout')}
               style={styles.actionTile}
             >
-              <Text style={styles.actionTileIcon}>🏋️</Text>
+              <Icon name="dumbbell" size={22} color={colors.primary} />
               <Text style={styles.actionTileText}>Workout</Text>
             </TouchableOpacity>
 
@@ -411,7 +446,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               onPress={() => onNavigateTab('diet')}
               style={styles.actionTile}
             >
-              <Text style={styles.actionTileIcon}>🥗</Text>
+              <Icon name="utensils" size={22} color={colors.primary} />
               <Text style={styles.actionTileText}>Diet</Text>
             </TouchableOpacity>
 
@@ -420,7 +455,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               onPress={() => onNavigateTab('schedule')}
               style={styles.actionTile}
             >
-              <Text style={styles.actionTileIcon}>⏱️</Text>
+              <Icon name="clock" size={22} color={colors.primary} />
               <Text style={styles.actionTileText}>Schedule</Text>
             </TouchableOpacity>
 
@@ -429,7 +464,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
               onPress={() => onNavigateTab('ai')}
               style={styles.actionTile}
             >
-              <Text style={styles.actionTileIcon}>🤖</Text>
+              <Icon name="bot" size={22} color={colors.primary} />
               <Text style={styles.actionTileText}>AI Coach</Text>
             </TouchableOpacity>
           </View>
@@ -487,9 +522,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.warningLight,
     borderColor: '#F59E0B',
   },
-  lateTiredIcon: {
-    fontSize: 12,
-  },
   lateTiredText: {
     ...typography.caption,
     fontWeight: '700',
@@ -509,8 +541,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  editPlanIcon: {
-    fontSize: 14,
+  profileAvatarBtn: {
+    marginLeft: 2,
+  },
+  profileBannerLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.accentBorder,
+    borderWidth: 1,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  profileBannerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  profileBannerText: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.primaryDark,
+    fontSize: 11,
   },
   heroBanner: {
     backgroundColor: colors.surface,
@@ -848,10 +903,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     paddingVertical: spacing.md,
     alignItems: 'center',
-    gap: spacing.xxs,
-  },
-  actionTileIcon: {
-    fontSize: 20,
+    gap: spacing.xs,
   },
   actionTileText: {
     ...typography.caption,

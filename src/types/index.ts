@@ -176,15 +176,31 @@ export interface MealItem {
   category: string;
 }
 
+export interface MealAlternative {
+  id: string;
+  name: string;
+  description: string;
+  approxProteinG: number;
+  estCalories: number;
+  approxCostRupees: number;
+  prepTimeMinutes: number;
+  cookingTip?: string;
+  ingredients: string[];
+  items?: MealItem[];
+}
+
 export interface PlannedMeal {
   id: string;
   mealType: string;
   title: string;
+  description?: string;
   totalProteinGrams: number;
   estimatedCost: number;
+  estCalories?: number;
   items: MealItem[];
   prepTimeMinutes?: number;
   cookingTip?: string;
+  alternatives?: MealAlternative[];
 }
 
 export interface GroceryEntry {
@@ -277,6 +293,8 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   followUps?: string[];
+  error?: boolean;
+  failedQuery?: string;
   contextUsed?: {
     goal: string;
     environment: string;
@@ -284,6 +302,13 @@ export interface ChatMessage {
     dailyBudget: number;
     durationMinutes: number;
   };
+}
+
+export interface SuggestedPromptCategory {
+  id: string;
+  categoryName: string;
+  icon: string;
+  prompts: string[];
 }
 
 export interface AIStatusResponse {

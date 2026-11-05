@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Modal } from './Modal';
 import { Button } from '../common/Button';
+import { Icon } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -93,7 +94,11 @@ export const LateTiredModal: React.FC<LateTiredModalProps> = ({
               isActive ? styles.statusBannerActive : styles.statusBannerInactive,
             ]}
           >
-            <Text style={styles.statusBannerIcon}>🌙</Text>
+            <Icon
+              name="moon"
+              size={20}
+              color={isActive ? '#B45309' : colors.primaryDark}
+            />
             <View style={styles.statusBannerTextCol}>
               <Text
                 style={[
@@ -112,7 +117,7 @@ export const LateTiredModal: React.FC<LateTiredModalProps> = ({
           {/* Quick Pillars */}
           <View style={styles.pillarsGrid}>
             <View style={styles.pillarCard}>
-              <Text style={styles.pillarIcon}>⏱️</Text>
+              <Icon name="timer" size={16} color={colors.primary} />
               <Text style={styles.pillarTitle}>15-Min Mobility Flow</Text>
               <Text style={styles.pillarDesc}>
                 Replaces heavy sets with gentle joint decompression and spinal mobility.
@@ -120,7 +125,7 @@ export const LateTiredModal: React.FC<LateTiredModalProps> = ({
             </View>
 
             <View style={styles.pillarCard}>
-              <Text style={styles.pillarIcon}>🛌</Text>
+              <Icon name="moon" size={16} color={colors.primary} />
               <Text style={styles.pillarTitle}>Earlier Sleep Shift</Text>
               <Text style={styles.pillarDesc}>
                 Shift bedtime 30–45 minutes earlier to recover your hormone and energy baseline.
@@ -147,7 +152,7 @@ export const LateTiredModal: React.FC<LateTiredModalProps> = ({
 
           {/* Integrity Note */}
           <View style={styles.noteBox}>
-            <Text style={styles.noteIcon}>🛡️</Text>
+            <Icon name="shield" size={14} color={colors.primaryDark} />
             <Text style={styles.noteText}>
               <Text style={styles.noteBold}>Zero Guilt Principle: </Text>
               Consistency is about staying in the movement rhythm, not grinding when depleted. Tomorrow your regular routine resumes automatically.
@@ -183,10 +188,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSubtle,
     borderColor: colors.border,
   },
-  statusBannerIcon: {
-    fontSize: 22,
-    marginTop: 2,
-  },
   statusBannerTextCol: {
     flex: 1,
     gap: 2,
@@ -218,11 +219,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
-    gap: 2,
-  },
-  pillarIcon: {
-    fontSize: 18,
-    marginBottom: spacing.xxs,
+    gap: 4,
   },
   pillarTitle: {
     ...typography.caption,
@@ -294,10 +291,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
     padding: spacing.sm,
     borderRadius: borderRadius.lg,
-  },
-  noteIcon: {
-    fontSize: 16,
-    marginTop: 2,
   },
   noteText: {
     ...typography.caption,

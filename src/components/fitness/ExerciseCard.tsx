@@ -15,6 +15,7 @@ import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
 import { Badge } from '../common/Badge';
+import { Icon } from '../common/Icon';
 
 export interface ExerciseCardProps {
   exercise: Exercise;
@@ -62,7 +63,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </>
           ) : (
             <View style={styles.fallbackBox}>
-              <Text style={styles.fallbackIcon}>🏋️</Text>
+              <Icon name="dumbbell" size={24} color={colors.primary} />
               <Text style={styles.fallbackText}>Exercise</Text>
             </View>
           )}
@@ -98,7 +99,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 onPress={() => onStartTimer(exercise.restSeconds, exercise.name)}
                 style={styles.restTimerBadge}
               >
-                <Text style={styles.restTimerText}>⏱️ {exercise.restSeconds}s Rest</Text>
+                <Icon name="timer" size={11} color={colors.primaryDark} />
+                <Text style={styles.restTimerText}>{exercise.restSeconds}s Rest</Text>
               </TouchableOpacity>
             ) : (
               <Text style={styles.restText}>Rest: {exercise.restSeconds}s</Text>
@@ -116,7 +118,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onPress={() => onStartTimer(exercise.restSeconds, exercise.name)}
               style={[styles.actionButton, styles.timerButton]}
             >
-              <Text style={[styles.actionButtonText, styles.timerButtonText]}>⏱️ Timer</Text>
+              <Icon name="timer" size={12} color={colors.primaryDark} />
+              <Text style={[styles.actionButtonText, styles.timerButtonText]}>Timer</Text>
             </TouchableOpacity>
           ) : null}
 
@@ -136,7 +139,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onPress={() => onSwapAlternative(exercise.id)}
               style={[styles.actionButton, styles.swapButton]}
             >
-              <Text style={[styles.actionButtonText, styles.swapButtonText]}>⇄ Swap</Text>
+              <Icon name="refresh" size={12} color={colors.primaryDark} />
+              <Text style={[styles.actionButtonText, styles.swapButtonText]}>Swap</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -185,10 +189,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surfaceSubtle,
-  },
-  fallbackIcon: {
-    fontSize: 22,
-    marginBottom: 2,
+    gap: 2,
   },
   fallbackText: {
     fontSize: 9,

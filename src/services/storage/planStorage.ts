@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GeneratedPlan, OnboardingData } from '../../types';
+import { GeneratedPlan, OnboardingData, ChatMessage } from '../../types';
 
 const STORAGE_KEYS = {
   USER_PROFILE: '@fitshift_user_profile',
   ACTIVE_PLAN: '@fitshift_active_plan',
   API_BASE_URL: '@fitshift_api_base_url',
   LATE_TIRED_ACTIVE: '@fitshift_late_tired_active',
+  CHAT_HISTORY: '@fitshift_ai_chat_history',
 } as const;
 
 export const planStorage = {
@@ -92,6 +93,59 @@ export const planStorage = {
     } catch (err) {
       console.error('[planStorage] Failed to load custom API URL:', err);
       return null;
+    }
+  },
+
+  /**
+   * Persists AI Coach conversation messages.
+   */
+  async saveChatHistory(messages: ChatMessage[]): Promise<void> {
+    try {
+      // Keep only last 50 messages to prevent excessive storage growth
+      const recent = messages.slice(-50);
+      await AsyncStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(recent));
+    } catch (err) {
+      console.error('[planStorage] Failed to save chat history:', err);
+    }
+  },
+
+  /**
+   * Loads saved AI Coach conversation messages.
+   */
+  async loadChatHistory(): Promise<ChatMessage[]> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.CHAT_HISTORY);
+      return data ? JSON.parse(data) : [];
+    } catch (err) {
+      console.error('[planStorage] Failed to load chat history:', err);
+      return [];
+    }
+  },
+
+  /**
+   * Clears saved AI Coach conversation messages.
+   */
+  async clearChatHistory(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
+    } catch (err) {
+      console.error('[planStorage] Failed to clear chat history:', err);
+    }
+  },
+
+  /**
+   * Clears all local application data (plan, profile, chat history, late mode).
+   */
+  async clearAllData(): Promise<void> {
+    try {
+      await Promise.all([
+        AsyncStorage.removeItem(STORAGE_KEYS.ACTIVE_PLAN),
+        AsyncStorage.removeItem(STORAGE_KEYS.USER_PROFILE),
+        AsyncStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY),
+        AsyncStorage.removeItem(STORAGE_KEYS.LATE_TIRED_ACTIVE),
+      ]);
+    } catch (err) {
+      console.error('[planStorage] Failed to clear all data:', err);
     }
   },
 };

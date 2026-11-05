@@ -17,6 +17,7 @@ export const colors = {
   surface: '#FFFFFF',
   surfaceSubtle: '#F4F4F6',
   surfaceCard: '#FFFFFF',
+  white: '#FFFFFF',
 
   // Dividers & Borders
   border: '#E5E7EB',

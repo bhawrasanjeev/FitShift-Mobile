@@ -4,6 +4,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
+import { Icon } from '../common/Icon';
 
 export interface OptionChipProps {
   label: string;
@@ -51,7 +52,11 @@ export const OptionChip: React.FC<OptionChipProps> = ({
       >
         {label}
       </Text>
-      {selected ? <Text style={styles.checkIcon}>✓</Text> : null}
+      {selected ? (
+        <View style={styles.checkIconWrapper}>
+          <Icon name="check" size={12} color={colors.primaryDark} strokeWidth={2.5} />
+        </View>
+      ) : null}
     </TouchableOpacity>
   );
 };
@@ -103,10 +108,7 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
     fontWeight: typography.weights.bold,
   },
-  checkIcon: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: typography.weights.bold,
+  checkIconWrapper: {
     marginLeft: spacing.xs,
   },
 });

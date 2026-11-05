@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-nativ
 import { PersonalBasics, FitnessGoal, Gender } from '../../types';
 import { SelectCard } from '../selection/SelectCard';
 import { NumberInput } from '../selection/NumberInput';
+import { Icon, IconName } from '../common/Icon';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -19,34 +20,34 @@ export const StepPersonalBasics: React.FC<StepPersonalBasicsProps> = ({
   onChange,
   error,
 }) => {
-  const goals: { id: FitnessGoal; title: string; description: string; badge: string; icon: string }[] = [
+  const goals: { id: FitnessGoal; title: string; description: string; badge: string; iconName: IconName }[] = [
     {
       id: 'muscle_gain',
       title: 'Muscle Gain & Strength',
       description: 'Progressive overload routines with protein-dense Indian whole meals.',
       badge: 'High Protein',
-      icon: '🏋️',
+      iconName: 'dumbbell',
     },
     {
       id: 'fat_loss',
       title: 'Fat Loss & Definition',
       description: 'Preserve lean muscle while maintaining a sustainable modest calorie deficit.',
       badge: 'Calorie Deficit',
-      icon: '🔥',
+      iconName: 'fire',
     },
     {
       id: 'weight_loss',
       title: 'Overall Weight Reduction',
       description: 'High-volume low-cost veggies, lentils, and structured consistent daily steps.',
       badge: 'High Volume',
-      icon: '⚖️',
+      iconName: 'activity',
     },
     {
       id: 'maintenance',
       title: 'Energy & Health Maintenance',
       description: 'Balanced vitality, cardiovascular health, mobility, and sustainable daily rhythm.',
       badge: 'Balanced',
-      icon: '💚',
+      iconName: 'leaf',
     },
   ];
 
@@ -139,7 +140,8 @@ export const StepPersonalBasics: React.FC<StepPersonalBasicsProps> = ({
 
       {error ? (
         <View style={styles.errorBox}>
-          <Text style={styles.errorText}>⚠️ {error}</Text>
+          <Icon name="alert" size={14} color="#DC2626" />
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : null}
 
@@ -156,7 +158,13 @@ export const StepPersonalBasics: React.FC<StepPersonalBasicsProps> = ({
               title={g.title}
               description={g.description}
               badge={g.badge}
-              icon={<Text style={styles.goalIcon}>{g.icon}</Text>}
+              icon={
+                <Icon
+                  name={g.iconName}
+                  size={18}
+                  color={data.goal === g.id ? colors.primaryDark : colors.textSecondary}
+                />
+              }
               selected={data.goal === g.id}
               onSelect={() => onChange({ goal: g.id })}
               style={styles.goalCard}
@@ -238,6 +246,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     backgroundColor: colors.dangerLight,
     borderColor: colors.danger,
     borderWidth: 1,
@@ -255,8 +266,5 @@ const styles = StyleSheet.create({
   },
   goalCard: {
     marginBottom: spacing.xs,
-  },
-  goalIcon: {
-    fontSize: 20,
   },
 });

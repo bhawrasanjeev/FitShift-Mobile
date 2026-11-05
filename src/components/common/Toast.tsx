@@ -5,6 +5,7 @@ import { typography } from '../../theme/typography';
 import { borderRadius } from '../../theme/borderRadius';
 import { spacing } from '../../theme/spacing';
 import { shadows } from '../../theme/shadows';
+import { Icon, IconName } from './Icon';
 
 export type ToastType = 'success' | 'warning' | 'error' | 'info';
 
@@ -36,35 +37,35 @@ export const Toast: React.FC<ToastProps> = ({
 
   if (!visible) return null;
 
-  const getTypeStyles = () => {
+  const getTypeStyles = (): { bg: string; border: string; text: string; icon: IconName } => {
     switch (type) {
       case 'success':
         return {
           bg: colors.successLight,
           border: '#A7F3D0',
           text: colors.primaryDark,
-          icon: '✓',
+          icon: 'check',
         };
       case 'warning':
         return {
           bg: colors.warningLight,
           border: '#FDE68A',
           text: '#92400E',
-          icon: '⚠',
+          icon: 'alert',
         };
       case 'error':
         return {
           bg: colors.dangerLight,
           border: '#FECACA',
           text: colors.danger,
-          icon: '!',
+          icon: 'alert',
         };
       case 'info':
         return {
           bg: colors.infoLight,
           border: '#BFDBFE',
           text: colors.info,
-          icon: 'ℹ',
+          icon: 'info',
         };
     }
   };
@@ -83,15 +84,13 @@ export const Toast: React.FC<ToastProps> = ({
       ]}
     >
       <View style={styles.iconCircle}>
-        <Text style={[styles.iconText, { color: currentType.text }]}>
-          {currentType.icon}
-        </Text>
+        <Icon name={currentType.icon} size={14} color={currentType.text} />
       </View>
       <Text style={[styles.message, { color: currentType.text }]} numberOfLines={2}>
         {message}
       </Text>
       <TouchableOpacity activeOpacity={0.7} onPress={onDismiss} style={styles.closeButton}>
-        <Text style={[styles.closeText, { color: currentType.text }]}>✕</Text>
+        <Icon name="x" size={14} color={currentType.text} />
       </TouchableOpacity>
     </View>
   );
