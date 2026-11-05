@@ -14,7 +14,6 @@ import { Icon } from '../../components/common/Icon';
 import { Avatar } from '../../components/common/Avatar';
 import { StatCard } from '../../components/fitness/StatCard';
 import { LateTiredModal } from '../../components/interactive/LateTiredModal';
-import { EditPlanModal } from '../../components/interactive/EditPlanModal';
 import { generateUserSchedule } from '../../utils/schedule';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -41,7 +40,6 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
   } = usePlan();
 
   const [isLateTiredModalOpen, setIsLateTiredModalOpen] = useState<boolean>(false);
-  const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState<boolean>(false);
 
   if (!plan) {
     return (
@@ -79,69 +77,22 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
     maintenance: 'Vitality & Maintenance',
   };
 
-  const handleSavePlan = async (updatedData: typeof userProfile): Promise<boolean> => {
-    return await regeneratePlan(updatedData);
-  };
-
   return (
     <View style={styles.screen}>
       <Header
         showBrand={true}
         onPressBrand={onOpenProfile}
         rightAction={
-          <View style={styles.headerRight}>
+          onOpenProfile ? (
             <TouchableOpacity
               activeOpacity={0.75}
-              onPress={() => setIsLateTiredModalOpen(true)}
-              style={[
-                styles.lateTiredPill,
-                isLateTiredActive && styles.lateTiredPillActive,
-              ]}
+              onPress={onOpenProfile}
+              style={styles.profileAvatarBtn}
+              accessibilityLabel="Open Profile & Settings"
             >
-              <Icon
-                name="moon"
-                size={13}
-                color={isLateTiredActive ? '#B45309' : colors.textSecondary}
-              />
-              <Text
-                style={[
-                  styles.lateTiredText,
-                  isLateTiredActive && styles.lateTiredTextActive,
-                ]}
-              >
-                {isLateTiredActive ? 'Late Mode' : 'Late / Tired?'}
-              </Text>
+              <Avatar name={userName} size="sm" variant="emerald" />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setIsEditPlanModalOpen(true)}
-              style={styles.editPlanBtn}
-            >
-              <Icon name="edit" size={15} color={colors.textSecondary} />
-            </TouchableOpacity>
-
-            {onResetPlan ? (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={onResetPlan}
-                style={styles.editPlanBtn}
-              >
-                <Icon name="refresh" size={15} color={colors.textSecondary} />
-              </TouchableOpacity>
-            ) : null}
-
-            {onOpenProfile ? (
-              <TouchableOpacity
-                activeOpacity={0.75}
-                onPress={onOpenProfile}
-                style={styles.profileAvatarBtn}
-                accessibilityLabel="Open Profile & Settings"
-              >
-                <Avatar name={userName} size="sm" variant="emerald" />
-              </TouchableOpacity>
-            ) : null}
-          </View>
+          ) : null
         }
       />
 
@@ -478,13 +429,6 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
         isActive={isLateTiredActive}
         onToggleActive={setIsLateTiredActive}
       />
-
-      <EditPlanModal
-        visible={isEditPlanModalOpen}
-        onClose={() => setIsEditPlanModalOpen(false)}
-        currentData={userProfile}
-        onSave={handleSavePlan}
-      />
     </View>
   );
 };
@@ -502,47 +446,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['4xl'],
     gap: spacing.lg,
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  lateTiredPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: colors.surfaceSubtle,
-    borderColor: colors.border,
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  lateTiredPillActive: {
-    backgroundColor: colors.warningLight,
-    borderColor: '#F59E0B',
-  },
-  lateTiredText: {
-    ...typography.caption,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    fontSize: 11,
-  },
-  lateTiredTextActive: {
-    color: '#B45309',
-  },
-  editPlanBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.surfaceSubtle,
-    borderColor: colors.border,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   profileAvatarBtn: {
-    marginLeft: 2,
+    padding: 2,
   },
   profileBannerLink: {
     flexDirection: 'row',

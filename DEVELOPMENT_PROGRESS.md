@@ -75,6 +75,7 @@
     - Tappable FitShift brand header on Overview.
     - Dedicated "View Full Profile & App Settings >" link inside the Overview Hero Card.
   - Nested navigation stack: `Overview` ↔ `ProfileScreen` ↔ `SettingsScreen` with consistent top back buttons and Android hardware back button listeners.
+  - **Home Header Decluttering:** Removed redundant and crowded `[ Late / Tired? ]`, `[ 📝 ]` (edit), and `[ 🔄 ]` (reset) buttons from the home page header. All editing is centralized in the Profile screen, plan reset in Settings, and Late/Tired adaptive mode accessible via Settings and the Recovery schedule screen. Home page header is now clean and minimal with the FitShift brand and user Avatar.
 
 ### Files Created
 - `src/screens/Profile/ProfileScreen.tsx`

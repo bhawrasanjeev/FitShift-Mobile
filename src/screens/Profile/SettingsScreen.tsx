@@ -30,7 +30,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onBack,
   onResetPlan,
 }) => {
-  const { resetPlan, clearAllData, plan, userProfile } = usePlan();
+  const {
+    resetPlan,
+    clearAllData,
+    plan,
+    userProfile,
+    isLateTiredActive,
+    setIsLateTiredActive,
+  } = usePlan();
 
   const [isResetPlanModalOpen, setIsResetPlanModalOpen] = useState(false);
   const [isClearChatModalOpen, setIsClearChatModalOpen] = useState(false);
@@ -145,7 +152,40 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </View>
         </View>
 
-        {/* Section 4: Data & Local Storage */}
+        {/* Section 4: Adaptive Routine Mode */}
+        <View style={styles.sectionCard}>
+          <View style={styles.cardHeader}>
+            <View style={styles.cardTitleRow}>
+              <Icon name="moon" size={16} color={colors.primary} />
+              <Text style={styles.cardTitle}>Adaptive Mode (Late / Tired)</Text>
+            </View>
+            <Badge
+              label={isLateTiredActive ? 'Active' : 'Standard Routine'}
+              variant={isLateTiredActive ? 'warning' : 'neutral'}
+              size="sm"
+            />
+          </View>
+
+          <Text style={styles.sectionDesc}>
+            Downshifts training volume to a 15-minute gentle mobility routine and highlights easy-to-digest recovery meals when you work late shifts or experience low energy.
+          </Text>
+
+          <View style={styles.actionRow}>
+            <Button
+              title={isLateTiredActive ? 'Deactivate Late Mode' : 'Activate Late / Tired Mode'}
+              variant={isLateTiredActive ? 'secondary' : 'outline'}
+              size="sm"
+              onPress={() => {
+                const next = !isLateTiredActive;
+                setIsLateTiredActive(next);
+                setToastMessage(next ? 'Late / Tired mode activated.' : 'Standard routine restored.');
+              }}
+              style={styles.actionBtn}
+            />
+          </View>
+        </View>
+
+        {/* Section 5: Data & Local Storage */}
         <View style={styles.sectionCard}>
           <View style={styles.cardHeader}>
             <View style={styles.cardTitleRow}>
