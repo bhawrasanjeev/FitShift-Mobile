@@ -25,8 +25,8 @@ export interface PlanSummaryScreenProps {
 
 export const PlanSummaryScreen: React.FC<PlanSummaryScreenProps> = ({
   onResetPlan,
-  onOpenShowcase,
-  onOpenApiConsole,
+  onOpenShowcase: _onOpenShowcase,
+  onOpenApiConsole: _onOpenApiConsole,
 }) => {
   const { plan, resetPlan } = usePlan();
 

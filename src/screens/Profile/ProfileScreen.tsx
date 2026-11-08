@@ -6,12 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlan, ProfileSectionKey } from '../../context/PlanContext';
 import { Header } from '../../components/common/Header';
 import { Avatar } from '../../components/common/Avatar';
 import { Badge } from '../../components/common/Badge';
-import { Icon, IconName } from '../../components/common/Icon';
+import { Icon } from '../../components/common/Icon';
 import { Button } from '../../components/common/Button';
 import { Toast } from '../../components/common/Toast';
 import { EditSectionModal } from '../../components/profile/EditSectionModal';
@@ -29,8 +28,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onBack,
   onOpenSettings,
 }) => {
-  const insets = useSafeAreaInsets();
-  const { userProfile, plan, hasPlan } = usePlan();
+  const { userProfile, hasPlan } = usePlan();
 
   const [activeEditSection, setActiveEditSection] = useState<ProfileSectionKey | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);

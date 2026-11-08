@@ -5,7 +5,6 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 import { borderRadius } from '../../theme/borderRadius';
-import { Badge } from './Badge';
 import { Logo } from './Logo';
 import { Icon } from './Icon';
 

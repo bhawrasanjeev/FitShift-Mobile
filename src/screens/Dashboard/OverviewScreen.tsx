@@ -36,7 +36,6 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
     userProfile,
     isLateTiredActive,
     setIsLateTiredActive,
-    regeneratePlan,
   } = usePlan();
 
   const [isLateTiredModalOpen, setIsLateTiredModalOpen] = useState<boolean>(false);

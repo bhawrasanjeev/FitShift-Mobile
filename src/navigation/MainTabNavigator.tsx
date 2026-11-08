@@ -19,7 +19,6 @@ import {
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
-import { borderRadius } from '../theme/borderRadius';
 import { Icon, IconName } from '../components/common';
 
 export interface MainTabNavigatorProps {

@@ -29,7 +29,6 @@ import {
   Gender,
   Occupation,
   ActivityLevel,
-  TrainingEnvironment,
   WorkoutDuration,
   ExperienceLevel,
   PreferredWorkoutTime,
@@ -57,7 +56,7 @@ export const EditSectionModal: React.FC<EditSectionModalProps> = ({
   onClose,
   onSaved,
 }) => {
-  const { userProfile, updateProfileSection, isLoading } = usePlan();
+  const { userProfile, updateProfileSection } = usePlan();
 
   // Local state copies for each section
   const [personalData, setPersonalData] = useState<PersonalBasics>(userProfile.personal);
