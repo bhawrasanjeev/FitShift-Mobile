@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SuggestedPrompts } from './SuggestedPrompts';
-import { Icon } from '../common/Icon';
 import { AIStatusResponse } from '../../types';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -15,30 +14,19 @@ export interface ChatEmptyStateProps {
 }
 
 export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({
-  status,
   onSelectPrompt,
   disabled = false,
 }) => {
-  const isConfigured = Boolean(status?.configured);
-  const providerLabel =
-    status?.provider === 'gemini'
-      ? 'Google Gemini'
-      : status?.provider === 'openai'
-      ? 'OpenAI'
-      : 'FitShift AI';
-
   return (
     <View style={styles.container}>
       <View style={styles.heroBox}>
         <View style={styles.avatarGlow}>
-          <Icon name="bot" size={24} color={colors.primaryDark} />
+          <Text style={styles.heroAiText}>AI</Text>
         </View>
 
         <Text style={styles.heroTitle}>Ask anything about your routine</Text>
         <Text style={styles.heroSubtitle}>
-          {isConfigured
-            ? `Powered by live ${providerLabel} intelligence. Ask about Indian whole-food nutrition, progressive overload, or daily budget hacks.`
-            : 'Interactive chat connects to live AI models (Gemini / OpenAI). Configure your server/.env key to enable.'}
+          Get quick guidance on workouts, Indian whole foods, or daily routine adjustments.
         </Text>
       </View>
 
@@ -57,37 +45,39 @@ const styles = StyleSheet.create({
   },
   heroBox: {
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
   },
   avatarGlow: {
-    width: 52,
-    height: 52,
-    borderRadius: borderRadius.lg,
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.xl,
     backgroundColor: '#ECFDF5',
     borderWidth: 1.5,
     borderColor: '#A7F3D0',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.sm,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  },
+  heroAiText: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: colors.primaryDark,
+    letterSpacing: 0.5,
   },
   heroTitle: {
     ...typography.h3,
     fontSize: 16,
+    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 4,
   },
   heroSubtitle: {
-    ...typography.bodySmall,
+    ...typography.caption,
     fontSize: 12,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 17,
+    lineHeight: 18,
   },
 });

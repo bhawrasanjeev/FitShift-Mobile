@@ -5,10 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Alert,
+  Switch,
 } from 'react-native';
 import { Header } from '../../components/common/Header';
-import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/interactive/Modal';
@@ -33,8 +32,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const {
     resetPlan,
     clearAllData,
-    plan,
-    userProfile,
     isLateTiredActive,
     setIsLateTiredActive,
   } = usePlan();
@@ -73,7 +70,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     <View style={styles.screen}>
       <Header
         title="Settings & Privacy"
-        subtitle="Application configuration & local data management"
+        subtitle="Preferences & Local Storage"
         showBrand={false}
         onBack={onBack}
       />
@@ -83,207 +80,135 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Section 1: Appearance */}
-        <View style={styles.sectionCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Icon name="sun" size={16} color={colors.primary} />
-              <Text style={styles.cardTitle}>Appearance & Design</Text>
+        {/* Section 1: Routine & Preferences */}
+        <Text style={styles.sectionHeader}>PREFERENCES</Text>
+        <View style={styles.groupCard}>
+          {/* Adaptive Late / Tired Toggle */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#FEF3C7' }]}>
+                <Icon name="moon" size={16} color="#D97706" />
+              </View>
+              <View style={styles.settingRowTextCol}>
+                <Text style={styles.settingTitle}>Adaptive Mode (Late / Tired)</Text>
+                <Text style={styles.settingSubtitle}>15-min light routine for low-energy days</Text>
+              </View>
             </View>
-            <Badge label="Emerald Light" variant="accent" size="sm" />
-          </View>
-          <Text style={styles.sectionDesc}>
-            FitShift uses a high-contrast emerald visual palette with clean paper surfaces, optimized for daylight visibility during workouts and kitchen meal prep.
-          </Text>
-        </View>
-
-        {/* Section 2: Units & Standards */}
-        <View style={styles.sectionCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Icon name="target" size={16} color={colors.primary} />
-              <Text style={styles.cardTitle}>Units & Measurement Standards</Text>
-            </View>
-            <Badge label="Metric System" variant="neutral" size="sm" />
-          </View>
-
-          <View style={styles.unitList}>
-            <View style={styles.unitRow}>
-              <Text style={styles.unitLabel}>Height Measurement</Text>
-              <Text style={styles.unitValue}>Centimetres (cm)</Text>
-            </View>
-            <View style={styles.unitRow}>
-              <Text style={styles.unitLabel}>Body Weight</Text>
-              <Text style={styles.unitValue}>Kilograms (kg)</Text>
-            </View>
-            <View style={styles.unitRow}>
-              <Text style={styles.unitLabel}>Energy Calculation</Text>
-              <Text style={styles.unitValue}>Kilocalories (kcal)</Text>
-            </View>
-            <View style={styles.unitRow}>
-              <Text style={styles.unitLabel}>Currency & Food Pricing</Text>
-              <Text style={styles.unitValue}>Indian Rupee (₹ INR)</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Section 3: AI Coach Preferences */}
-        <View style={styles.sectionCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Icon name="bot" size={16} color={colors.primary} />
-              <Text style={styles.cardTitle}>AI Coach Configuration</Text>
-            </View>
-            <Badge label="Backend Synced" variant="accent" size="sm" />
-          </View>
-
-          <Text style={styles.sectionDesc}>
-            FitShift AI uses server-side Gemini 2.5 Flash with automatic OpenAI fallback. Your fitness goal ({userProfile.personal.goal}), environment ({userProfile.training.environment}), and budget (₹{userProfile.budget.dailyBudgetRupees}/day) are securely injected as context when toggled on.
-          </Text>
-
-          <View style={styles.actionRow}>
-            <Button
-              title="Clear AI Conversation History"
-              variant="outline"
-              size="sm"
-              onPress={() => setIsClearChatModalOpen(true)}
-              style={styles.actionBtn}
-            />
-          </View>
-        </View>
-
-        {/* Section 4: Adaptive Routine Mode */}
-        <View style={styles.sectionCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Icon name="moon" size={16} color={colors.primary} />
-              <Text style={styles.cardTitle}>Adaptive Mode (Late / Tired)</Text>
-            </View>
-            <Badge
-              label={isLateTiredActive ? 'Active' : 'Standard Routine'}
-              variant={isLateTiredActive ? 'warning' : 'neutral'}
-              size="sm"
-            />
-          </View>
-
-          <Text style={styles.sectionDesc}>
-            Downshifts training volume to a 15-minute gentle mobility routine and highlights easy-to-digest recovery meals when you work late shifts or experience low energy.
-          </Text>
-
-          <View style={styles.actionRow}>
-            <Button
-              title={isLateTiredActive ? 'Deactivate Late Mode' : 'Activate Late / Tired Mode'}
-              variant={isLateTiredActive ? 'secondary' : 'outline'}
-              size="sm"
-              onPress={() => {
-                const next = !isLateTiredActive;
-                setIsLateTiredActive(next);
-                setToastMessage(next ? 'Late / Tired mode activated.' : 'Standard routine restored.');
+            <Switch
+              value={isLateTiredActive}
+              onValueChange={(val) => {
+                setIsLateTiredActive(val);
+                setToastMessage(val ? 'Late / Tired mode activated.' : 'Standard routine restored.');
               }}
-              style={styles.actionBtn}
+              trackColor={{ false: colors.border, true: '#A7F3D0' }}
+              thumbColor={isLateTiredActive ? colors.primary : '#D4D4D8'}
+              style={styles.switch}
             />
           </View>
-        </View>
 
-        {/* Section 5: Data & Local Storage */}
-        <View style={styles.sectionCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Icon name="shield" size={16} color={colors.primary} />
-              <Text style={styles.cardTitle}>Local Storage & Plan Lifecycle</Text>
-            </View>
-            <Badge label="Offline First" variant="neutral" size="sm" />
-          </View>
+          <View style={styles.rowDivider} />
 
-          <Text style={styles.sectionDesc}>
-            FitShift never uploads your personal metrics to cloud user accounts. All plans, customized swaps, and grocery checklists are saved directly to your device storage.
-          </Text>
-
-          <View style={styles.dangerActions}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setIsResetPlanModalOpen(true)}
-              style={styles.warningActionBtn}
-            >
-              <Icon name="refresh" size={15} color="#D97706" />
-              <View style={styles.actionBtnTextCol}>
-                <Text style={styles.warningActionTitle}>Reset Active Fitness Plan</Text>
-                <Text style={styles.warningActionSub}>
-                  Clears the current workout & diet plan while preserving your profile basics.
-                </Text>
+          {/* Theme */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#ECFDF5' }]}>
+                <Icon name="sun" size={16} color={colors.primary} />
               </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setIsClearAllDataModalOpen(true)}
-              style={styles.dangerActionBtn}
-            >
-              <Icon name="trash" size={15} color="#DC2626" />
-              <View style={styles.actionBtnTextCol}>
-                <Text style={styles.dangerActionTitle}>Clear All Local Application Data</Text>
-                <Text style={styles.dangerActionSub}>
-                  Completely wipes all profile details, saved plans, and AI conversation messages.
-                </Text>
+              <View style={styles.settingRowTextCol}>
+                <Text style={styles.settingTitle}>Theme</Text>
               </View>
-            </TouchableOpacity>
+            </View>
+            <Text style={styles.settingValueText}>Emerald Light</Text>
+          </View>
+
+          <View style={styles.rowDivider} />
+
+          {/* Units */}
+          <View style={styles.settingRow}>
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#EFF6FF' }]}>
+                <Icon name="target" size={16} color="#2563EB" />
+              </View>
+              <View style={styles.settingRowTextCol}>
+                <Text style={styles.settingTitle}>Measurement Units</Text>
+              </View>
+            </View>
+            <Text style={styles.settingValueText}>Metric (cm, kg, ₹)</Text>
           </View>
         </View>
 
-        {/* Section 5: Transparent Privacy */}
-        <View style={styles.privacyCard}>
-          <View style={styles.privacyHeader}>
-            <Icon name="shield" size={18} color={colors.primary} />
-            <Text style={styles.privacyTitle}>FitShift Privacy Philosophy</Text>
-          </View>
-          <View style={styles.privacyList}>
-            <View style={styles.privacyItem}>
-              <Text style={styles.privacyBullet}>•</Text>
-              <Text style={styles.privacyText}>
-                <Text style={styles.bold}>Zero Login Barrier: </Text>
-                No mandatory email, password, or cloud account required to use FitShift.
-              </Text>
+        {/* Section 2: AI Coach */}
+        <Text style={styles.sectionHeader}>AI ASSISTANT</Text>
+        <View style={styles.groupCard}>
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={() => setIsClearChatModalOpen(true)}
+          >
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#ECFDF5' }]}>
+                <Icon name="sparkles" size={16} color={colors.primary} />
+              </View>
+              <View style={styles.settingRowTextCol}>
+                <Text style={styles.settingTitle}>Clear AI Chat History</Text>
+                <Text style={styles.settingSubtitle}>Erase coach messages from this device</Text>
+              </View>
             </View>
-            <View style={styles.privacyItem}>
-              <Text style={styles.privacyBullet}>•</Text>
-              <Text style={styles.privacyText}>
-                <Text style={styles.bold}>Local Storage: </Text>
-                Your workout splits, meal plans, and grocery checklists stay on your Android device.
-              </Text>
-            </View>
-            <View style={styles.privacyItem}>
-              <Text style={styles.privacyBullet}>•</Text>
-              <Text style={styles.privacyText}>
-                <Text style={styles.bold}>Server-Side Security: </Text>
-                AI API credentials remain strictly protected on the backend server.
-              </Text>
-            </View>
-          </View>
+            <Icon name="chevron-right" size={16} color={colors.textMuted} />
+          </TouchableOpacity>
         </View>
 
-        {/* Section 6: About FitShift */}
+        {/* Section 3: Data & Storage */}
+        <Text style={styles.sectionHeader}>STORAGE & ROUTINE LIFECYCLE</Text>
+        <View style={styles.groupCard}>
+          {/* Reset Active Routine */}
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={() => setIsResetPlanModalOpen(true)}
+          >
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#FEF3C7' }]}>
+                <Icon name="refresh" size={16} color="#D97706" />
+              </View>
+              <View style={styles.settingRowTextCol}>
+                <Text style={[styles.settingTitle, { color: '#B45309' }]}>Reset Active Plan</Text>
+                <Text style={styles.settingSubtitle}>Clears workout & diet, preserves profile</Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={16} color="#D97706" />
+          </TouchableOpacity>
+
+          <View style={styles.rowDivider} />
+
+          {/* Clear All Data */}
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.7}
+            onPress={() => setIsClearAllDataModalOpen(true)}
+          >
+            <View style={styles.settingRowLeft}>
+              <View style={[styles.iconBox, { backgroundColor: '#FEE2E2' }]}>
+                <Icon name="trash" size={16} color="#DC2626" />
+              </View>
+              <View style={styles.settingRowTextCol}>
+                <Text style={[styles.settingTitle, { color: '#DC2626' }]}>Clear All Application Data</Text>
+                <Text style={styles.settingSubtitle}>Deletes profile, plans & resets to start</Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={16} color="#DC2626" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Section 4: About & Privacy Footer */}
         <View style={styles.aboutCard}>
-          <View style={styles.aboutHeader}>
-            <Logo size={32} />
-            <View style={styles.aboutMeta}>
-              <Text style={styles.aboutTitle}>FitShift Android Edition</Text>
-              <Text style={styles.aboutVersion}>Version 1.0.0 (Release Build)</Text>
-            </View>
+          <Logo size={28} />
+          <View style={styles.aboutMeta}>
+            <Text style={styles.aboutTitle}>FitShift • Routine-First Fitness</Text>
+            <Text style={styles.aboutSubtitle}>
+              Version 1.0.0 • Offline-First • Zero Cloud Tracking
+            </Text>
           </View>
-          <Text style={styles.aboutDesc}>
-            A routine-first, budget-realistic fitness blueprint generator built around authentic Indian food staples and practical daily schedules. Planning, Not Tracking.
-          </Text>
-        </View>
-
-        {/* Back to Profile */}
-        <View style={styles.bottomSection}>
-          <Button
-            title="← Back to Profile"
-            variant="outline"
-            size="md"
-            onPress={onBack}
-            style={styles.backBtn}
-          />
         </View>
       </ScrollView>
 
@@ -322,7 +247,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         visible={isResetPlanModalOpen}
         onClose={() => setIsResetPlanModalOpen(false)}
         title="Reset Fitness Plan?"
-        subtitle="This will remove your current 7-day workout split, meal blueprint, and active grocery list."
+        subtitle="This will remove your current workout split, meal blueprint, and active grocery list."
         footer={
           <View style={styles.modalFooterRow}>
             <Button
@@ -377,7 +302,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         </Text>
       </Modal>
 
-      {/* Toast */}
+      {/* Toast Notification */}
       <Toast
         visible={Boolean(toastMessage)}
         message={toastMessage || ''}
@@ -397,193 +322,104 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: spacing.lg,
-    paddingBottom: spacing['4xl'],
-    gap: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.xxl,
   },
-  sectionCard: {
+  sectionHeader: {
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    letterSpacing: 0.6,
+    marginTop: spacing.md,
+    marginBottom: 6,
+    paddingHorizontal: 4,
+  },
+  groupCard: {
     backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1,
     borderRadius: borderRadius.xl,
-    padding: spacing.md,
-    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
   },
-  cardHeader: {
+  settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: spacing.xs,
-    borderBottomColor: colors.borderSubtle,
-    borderBottomWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
-  cardTitleRow: {
+  settingRowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: 12,
+    flex: 1,
+    marginRight: spacing.sm,
   },
-  cardTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingRowTextCol: {
+    flex: 1,
+  },
+  settingTitle: {
+    ...typography.body,
+    fontSize: 14,
+    fontWeight: '600',
     color: colors.textPrimary,
   },
-  sectionDesc: {
+  settingSubtitle: {
     ...typography.caption,
+    fontSize: 11,
     color: colors.textSecondary,
-    lineHeight: 18,
+    marginTop: 1,
   },
-  unitList: {
-    gap: spacing.xs,
-  },
-  unitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  unitLabel: {
-    ...typography.caption,
-    color: colors.textMuted,
+  settingValueText: {
+    ...typography.bodySmall,
+    fontSize: 12,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
-  unitValue: {
-    ...typography.caption,
-    color: colors.textPrimary,
-    fontWeight: '600',
+  rowDivider: {
+    height: 1,
+    backgroundColor: colors.borderSubtle,
+    marginLeft: 62,
   },
-  actionRow: {
-    marginTop: spacing.xs,
-  },
-  actionBtn: {
-    alignSelf: 'flex-start',
-  },
-  dangerActions: {
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  warningActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    backgroundColor: '#FFFBEB',
-    borderColor: '#FDE68A',
-    borderWidth: 1,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-  },
-  warningActionTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: '#92400E',
-  },
-  warningActionSub: {
-    ...typography.caption,
-    color: '#B45309',
-    fontSize: 11,
-    lineHeight: 15,
-    marginTop: 2,
-  },
-  dangerActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-  },
-  dangerActionTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: '#DC2626',
-  },
-  dangerActionSub: {
-    ...typography.caption,
-    color: '#B91C1C',
-    fontSize: 11,
-    lineHeight: 15,
-    marginTop: 2,
-  },
-  actionBtnTextCol: {
-    flex: 1,
-  },
-  privacyCard: {
-    backgroundColor: colors.primaryLight,
-    borderColor: colors.accentBorder,
-    borderWidth: 1,
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  privacyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  privacyTitle: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: colors.primaryDark,
-  },
-  privacyList: {
-    gap: 6,
-  },
-  privacyItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 6,
-  },
-  privacyBullet: {
-    color: colors.primary,
-    fontWeight: '700',
-  },
-  privacyText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    flex: 1,
-    lineHeight: 16,
-  },
-  bold: {
-    fontWeight: '700',
-    color: colors.textPrimary,
+  switch: {
+    transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }],
   },
   aboutCard: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  aboutHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm + 2,
+    backgroundColor: colors.surfaceSubtle,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.xl,
+    justifyContent: 'center',
   },
   aboutMeta: {
-    gap: 2,
+    alignItems: 'flex-start',
   },
   aboutTitle: {
-    ...typography.bodySmall,
+    ...typography.caption,
+    fontSize: 12,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  aboutVersion: {
+  aboutSubtitle: {
     ...typography.caption,
-    color: colors.textMuted,
-    fontSize: 11,
-  },
-  aboutDesc: {
-    ...typography.caption,
+    fontSize: 10,
     color: colors.textSecondary,
-    lineHeight: 18,
-  },
-  bottomSection: {
-    alignItems: 'center',
-    marginTop: spacing.xs,
-  },
-  backBtn: {
-    width: '100%',
+    marginTop: 2,
   },
   modalFooterRow: {
     flexDirection: 'row',
@@ -594,12 +430,12 @@ const styles = StyleSheet.create({
   modalNoticeText: {
     ...typography.bodySmall,
     color: colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   modalWarningText: {
     ...typography.bodySmall,
-    color: '#DC2626',
+    color: colors.danger,
+    lineHeight: 18,
     fontWeight: '500',
-    lineHeight: 20,
   },
 });

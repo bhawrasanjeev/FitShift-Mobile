@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Badge } from '../common/Badge';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../common/Icon';
 import { AIStatusResponse } from '../../types';
 import { colors } from '../../theme/colors';
@@ -21,52 +21,38 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   isLoadingStatus,
   hasMessages,
   onClearChat,
-  onRefreshStatus,
 }) => {
-  const isConfigured = Boolean(status?.configured);
-  const providerName = status?.provider ? status.provider.toUpperCase() : 'AI READY';
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, (StatusBar.currentHeight || 0), 44);
+  const isOnline = Boolean(status?.configured);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: topInset + spacing.sm }]}>
       <View style={styles.topRow}>
         <View style={styles.titleGroup}>
           <View style={styles.avatarBox}>
-            <Icon name="bot" size={20} color={colors.primaryDark} />
+            <Text style={styles.avatarText}>AI</Text>
           </View>
           <View style={styles.titleTextCol}>
             <View style={styles.nameRow}>
-              <Text style={styles.title}>FitShift Coach</Text>
+              <Text style={styles.title}>AI Coach</Text>
               <View style={styles.statusDot}>
                 <View
                   style={[
                     styles.indicatorDot,
-                    isConfigured ? styles.indicatorOnline : styles.indicatorOffline,
+                    isOnline ? styles.indicatorOnline : styles.indicatorOffline,
                   ]}
                 />
               </View>
             </View>
-            <Text style={styles.subtitle}>
-              Routine-first & budget-realistic companion
-            </Text>
+            <Text style={styles.subtitle}>Fitness & Nutrition Assistant</Text>
           </View>
         </View>
 
         <View style={styles.actionsGroup}>
           {isLoadingStatus ? (
             <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onRefreshStatus}
-              accessibilityLabel="Refresh AI status"
-            >
-              <Badge
-                label={isConfigured ? providerName : 'OFFLINE'}
-                variant={isConfigured ? 'accent' : 'warning'}
-                size="sm"
-              />
-            </TouchableOpacity>
-          )}
+          ) : null}
 
           {hasMessages && onClearChat && (
             <TouchableOpacity
@@ -75,6 +61,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               activeOpacity={0.7}
               accessibilityLabel="Clear conversation"
             >
+              <Icon name="trash" size={13} color={colors.textSecondary} />
               <Text style={styles.clearBtnText}>Clear</Text>
             </TouchableOpacity>
           )}
@@ -88,7 +75,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
@@ -102,18 +88,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    marginRight: spacing.sm,
   },
   avatarBox: {
-    width: 38,
-    height: 38,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.sm,
+  },
+  avatarText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   titleTextCol: {
     flex: 1,
@@ -121,20 +110,21 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: 6,
   },
   title: {
     ...typography.h3,
     fontSize: 16,
+    fontWeight: '700',
     color: colors.textPrimary,
   },
   statusDot: {
     padding: 2,
   },
   indicatorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
   },
   indicatorOnline: {
     backgroundColor: colors.primary,
@@ -146,6 +136,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textSecondary,
     fontSize: 11,
+    marginTop: 1,
   },
   actionsGroup: {
     flexDirection: 'row',
@@ -153,9 +144,12 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   clearBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: spacing.xs + 2,
-    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 5,
+    borderRadius: borderRadius.md,
     backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
     borderColor: colors.border,
@@ -163,7 +157,7 @@ const styles = StyleSheet.create({
   clearBtnText: {
     ...typography.caption,
     fontSize: 11,
-    color: colors.textSecondary,
     fontWeight: '600',
+    color: colors.textSecondary,
   },
 });

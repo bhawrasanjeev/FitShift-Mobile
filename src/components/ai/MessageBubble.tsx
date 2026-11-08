@@ -127,7 +127,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <View style={styles.coachWrapper}>
       <View style={styles.coachAvatar}>
-        <Icon name="bot" size={14} color={colors.primaryDark} />
+        <Text style={styles.coachAvatarText}>AI</Text>
       </View>
 
       <View style={[styles.coachBubble, message.error && styles.coachBubbleError]}>
@@ -255,8 +255,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   coachAvatar: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     borderRadius: borderRadius.md,
     backgroundColor: '#ECFDF5',
     borderWidth: 1,
@@ -265,6 +265,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: spacing.xs + 2,
     marginTop: 2,
+  },
+  coachAvatarText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    letterSpacing: 0.3,
   },
   coachBubble: {
     flex: 1,

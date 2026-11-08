@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -28,51 +28,138 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   error,
   style,
 }) => {
+  const allowsDecimal = step < 1 || unit === 'kg';
+
+  // Initialize local text state with current value
+  const [localText, setLocalText] = useState<string>(() => {
+    if (value === undefined || value === null || isNaN(value) || value === 0) {
+      return '';
+    }
+    return String(value);
+  });
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  // Sync external value updates when the user is not actively typing
+  useEffect(() => {
+    if (!isFocused) {
+      if (value === undefined || value === null || isNaN(value) || value === 0) {
+        setLocalText('');
+      } else {
+        setLocalText(String(value));
+      }
+    }
+  }, [value, isFocused]);
+
   const handleDecrement = () => {
-    const next = Math.max(min, (Number(value) || 0) - step);
+    const current = parseFloat(localText) || value || 0;
+    const next = Math.max(min, Math.round((current - step) * 10) / 10);
+    const formatted = String(next);
+    setLocalText(formatted);
     onChangeValue(next);
   };
 
   const handleIncrement = () => {
-    const next = Math.min(max, (Number(value) || 0) + step);
+    const current = parseFloat(localText) || value || 0;
+    const next = Math.min(max, Math.round((current + step) * 10) / 10);
+    const formatted = String(next);
+    setLocalText(formatted);
     onChangeValue(next);
   };
 
   const handleTextChange = (text: string) => {
-    const numeric = text.replace(/[^0-9.]/g, '');
-    if (numeric === '') {
+    // Sanitize input: allow only digits and at most one decimal point (if decimal allowed)
+    let cleaned = allowsDecimal ? text.replace(/[^0-9.]/g, '') : text.replace(/[^0-9]/g, '');
+
+    if (allowsDecimal) {
+      const parts = cleaned.split('.');
+      if (parts.length > 2) {
+        cleaned = parts[0] + '.' + parts.slice(1).join('');
+      }
+    }
+
+    // Strip leading zeroes unless it's "0" or "0."
+    if (cleaned.length > 1 && cleaned.startsWith('0') && !cleaned.startsWith('0.')) {
+      cleaned = cleaned.replace(/^0+/, '') || '0';
+    }
+
+    setLocalText(cleaned);
+
+    if (cleaned === '' || cleaned === '.') {
       onChangeValue(0);
       return;
     }
-    const parsed = Number(numeric);
+
+    const parsed = parseFloat(cleaned);
     if (!isNaN(parsed)) {
-      onChangeValue(Math.min(max, Math.max(min, parsed)));
+      // NOTE: Do NOT clamp to `min` while typing! Clamping while typing blocks users from
+      // entering multi-digit numbers (e.g. typing '2' for '25' when min is 14 would clamp to 14).
+      // We pass the parsed number directly so the user has complete typing freedom.
+      onChangeValue(parsed);
     }
   };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+
+    if (localText.trim() === '' || isNaN(parseFloat(localText))) {
+      // On blur, if empty, revert to min or 0
+      const fallback = min > 0 ? min : 0;
+      setLocalText(fallback === 0 ? '' : String(fallback));
+      onChangeValue(fallback);
+      return;
+    }
+
+    const parsed = parseFloat(localText);
+    const clamped = Math.min(max, Math.max(min, parsed));
+    const formatted = allowsDecimal
+      ? String(Math.round(clamped * 10) / 10)
+      : String(Math.round(clamped));
+
+    setLocalText(formatted);
+    onChangeValue(Number(formatted));
+  };
+
+  const currentNumeric = parseFloat(localText) || value || 0;
+  const isMinDisabled = currentNumeric <= min;
+  const isMaxDisabled = currentNumeric >= max;
 
   return (
     <View style={[styles.container, style]}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
 
-      <View style={[styles.inputRow, error ? styles.inputRowError : null]}>
+      <View
+        style={[
+          styles.inputRow,
+          isFocused ? styles.inputRowFocused : null,
+          error ? styles.inputRowError : null,
+        ]}
+      >
         {/* Decrement Button */}
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleDecrement}
-          disabled={value <= min}
-          style={[styles.stepperButton, value <= min && styles.stepperDisabled]}
+          disabled={isMinDisabled}
+          style={[styles.stepperButton, isMinDisabled && styles.stepperDisabled]}
         >
-          <Text style={[styles.stepperText, value <= min && styles.stepperTextDisabled]}>−</Text>
+          <Text style={[styles.stepperText, isMinDisabled && styles.stepperTextDisabled]}>−</Text>
         </TouchableOpacity>
 
         {/* Center Input Display */}
         <View style={styles.centerBox}>
           <TextInput
-            value={value === 0 ? '' : String(value)}
+            value={localText}
             onChangeText={handleTextChange}
-            keyboardType="numeric"
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            keyboardType={allowsDecimal ? 'decimal-pad' : 'numeric'}
             placeholder="0"
             placeholderTextColor={colors.textMuted}
+            selectTextOnFocus={true}
+            returnKeyType="done"
             style={styles.textInput}
           />
           {unit ? <Text style={styles.unitText}>{unit}</Text> : null}
@@ -82,10 +169,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleIncrement}
-          disabled={value >= max}
-          style={[styles.stepperButton, value >= max && styles.stepperDisabled]}
+          disabled={isMaxDisabled}
+          style={[styles.stepperButton, isMaxDisabled && styles.stepperDisabled]}
         >
-          <Text style={[styles.stepperText, value >= max && styles.stepperTextDisabled]}>+</Text>
+          <Text style={[styles.stepperText, isMaxDisabled && styles.stepperTextDisabled]}>+</Text>
         </TouchableOpacity>
       </View>
 
@@ -112,6 +199,9 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: borderRadius.xl,
     padding: spacing.xs,
+  },
+  inputRowFocused: {
+    borderColor: colors.primary,
   },
   inputRowError: {
     borderColor: colors.danger,

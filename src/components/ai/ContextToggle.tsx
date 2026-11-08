@@ -16,37 +16,28 @@ export interface ContextToggleProps {
 export const ContextToggle: React.FC<ContextToggleProps> = ({
   usePlanContext,
   onToggle,
-  userProfile,
 }) => {
   return (
-    <View style={styles.card}>
+    <View style={styles.container}>
       <TouchableOpacity
-        style={styles.headerRow}
-        activeOpacity={0.8}
+        style={styles.toggleRow}
+        activeOpacity={0.7}
         onPress={() => onToggle(!usePlanContext)}
       >
-        <View style={styles.iconBox}>
+        <View style={styles.leftCol}>
           <Icon
-            name={usePlanContext ? 'sparkles' : 'shield'}
-            size={16}
-            color={usePlanContext ? colors.primaryDark : colors.textMuted}
+            name="sparkles"
+            size={14}
+            color={usePlanContext ? colors.primary : colors.textMuted}
           />
-        </View>
-
-        <View style={styles.textCol}>
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>Use my FitShift plan as context</Text>
-            {usePlanContext && (
-              <View style={styles.activeTag}>
-                <Text style={styles.activeTagText}>ACTIVE</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.description}>
-            {usePlanContext
-              ? 'Coach tailors answers to your goal, diet, Indian food budget & environment.'
-              : 'Answers will be general fitness advice without referencing your saved plan.'}
+          <Text style={styles.label}>
+            {usePlanContext ? 'Plan context linked' : 'General fitness mode'}
           </Text>
+          {usePlanContext && (
+            <View style={styles.activePill}>
+              <Text style={styles.activePillText}>ACTIVE</Text>
+            </View>
+          )}
         </View>
 
         <Switch
@@ -54,166 +45,56 @@ export const ContextToggle: React.FC<ContextToggleProps> = ({
           onValueChange={onToggle}
           trackColor={{ false: colors.border, true: '#A7F3D0' }}
           thumbColor={usePlanContext ? colors.primary : '#D4D4D8'}
+          style={styles.switch}
         />
       </TouchableOpacity>
-
-      {/* Snapshot of Active Plan Context Chips */}
-      {usePlanContext && userProfile && (
-        <View style={styles.contextSnapshot}>
-          <Text style={styles.snapshotLabel}>ACTIVE CONTEXT INJECTED:</Text>
-          <View style={styles.chipWrap}>
-            <View style={styles.chip}>
-              <Icon name="target" size={10} color={colors.primaryDark} />
-              <Text style={styles.chipText}>
-                {userProfile.personal.goal.replace(/_/g, ' ')}
-              </Text>
-            </View>
-            <View style={styles.chip}>
-              <Icon
-                name={userProfile.training.environment === 'home' ? 'home' : 'building'}
-                size={10}
-                color={colors.primaryDark}
-              />
-              <Text style={styles.chipText}>
-                {userProfile.training.environment === 'home' ? 'Home' : 'Gym'}
-              </Text>
-            </View>
-            <View style={styles.chip}>
-              <Icon name="clock" size={10} color={colors.primaryDark} />
-              <Text style={styles.chipText}>
-                {userProfile.training.durationMinutes}m
-              </Text>
-            </View>
-            <View style={styles.chip}>
-              <Icon name="utensils" size={10} color={colors.primaryDark} />
-              <Text style={styles.chipText}>
-                {userProfile.food.dietType.replace(/_/g, ' ')}
-              </Text>
-            </View>
-            <View style={[styles.chip, styles.chipBudget]}>
-              <Icon name="indian-rupee" size={10} color="#047857" />
-              <Text style={styles.chipTextBudget}>
-                ₹{userProfile.budget.dailyBudgetRupees}/day
-              </Text>
-            </View>
-          </View>
-        </View>
-      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.sm + 2,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.xs,
-    marginBottom: spacing.xs,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    elevation: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
   },
-  headerRow: {
+  leftCol: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-  },
-  iconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.surfaceSubtle,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textCol: {
+    gap: spacing.xs + 2,
     flex: 1,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  title: {
+  label: {
     ...typography.caption,
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 12,
     color: colors.textPrimary,
   },
-  activeTag: {
+  activePill: {
     backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    borderRadius: borderRadius.xs,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-  },
-  activeTagText: {
-    ...typography.caption,
-    fontSize: 9,
-    fontWeight: '800',
-    color: colors.primary,
-  },
-  description: {
-    ...typography.caption,
-    fontSize: 11,
-    color: colors.textSecondary,
-    lineHeight: 15,
-    marginTop: 2,
-  },
-  contextSnapshot: {
-    marginTop: spacing.xs + 2,
-    paddingTop: spacing.xs + 2,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  snapshotLabel: {
-    ...typography.caption,
-    fontSize: 9,
-    fontWeight: '700',
-    color: colors.textMuted,
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  chipWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: colors.surfaceSubtle,
-    borderRadius: borderRadius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
     paddingHorizontal: 6,
     paddingVertical: 2,
-  },
-  chipBudget: {
-    backgroundColor: '#ECFDF5',
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
     borderColor: '#A7F3D0',
   },
-  chipText: {
-    ...typography.caption,
-    fontSize: 10,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    textTransform: 'capitalize',
-  },
-  chipTextBudget: {
-    ...typography.caption,
-    fontSize: 10,
+  activePillText: {
+    fontSize: 9,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.primaryDark,
+    letterSpacing: 0.4,
+  },
+  switch: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
 });

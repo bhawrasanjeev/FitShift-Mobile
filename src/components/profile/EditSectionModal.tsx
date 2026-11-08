@@ -242,7 +242,7 @@ export const EditSectionModal: React.FC<EditSectionModalProps> = ({
           <TextInput
             value={personalData.name}
             onChangeText={(val) => setPersonalData((prev) => ({ ...prev, name: val }))}
-            placeholder="e.g. Aarav Sharma"
+            placeholder="e.g. sanjeev"
             placeholderTextColor={colors.textMuted}
             style={styles.textInput}
           />

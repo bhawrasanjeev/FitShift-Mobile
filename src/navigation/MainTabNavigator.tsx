@@ -39,7 +39,7 @@ export const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
     { id: 'workout', label: 'Workout', iconName: 'dumbbell' },
     { id: 'diet', label: 'Diet', iconName: 'utensils' },
     { id: 'schedule', label: 'Schedule', iconName: 'clock' },
-    { id: 'ai', label: 'AI Coach', iconName: 'bot' },
+    { id: 'ai', label: 'AI Coach', iconName: 'sparkles' },
   ];
 
   // Android hardware back button handler
@@ -84,48 +84,50 @@ export const MainTabNavigator: React.FC<MainTabNavigatorProps> = ({
         {activeTab === 'ai' && <AICoachTabScreen />}
       </View>
 
-      {/* Native-Style Bottom Tab Navigation Bar */}
+      {/* Floating Capsule Bottom Tab Navigation Bar */}
       <View
         style={[
-          styles.tabBar,
+          styles.bottomBarWrapper,
           {
-            paddingBottom: Math.max(insets.bottom, Platform.OS === 'android' ? 8 : 16),
+            paddingBottom: Math.max(insets.bottom, Platform.OS === 'android' ? 10 : 16),
           },
         ]}
       >
-        {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <TouchableOpacity
-              key={tab.id}
-              activeOpacity={0.7}
-              onPress={() => handleTabPress(tab.id)}
-              style={styles.tabItem}
-            >
-              <View
-                style={[
-                  styles.tabIconContainer,
-                  isActive && styles.tabIconContainerActive,
-                ]}
+        <View style={styles.tabBarPill}>
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                activeOpacity={0.7}
+                onPress={() => handleTabPress(tab.id)}
+                style={styles.tabItem}
               >
-                <Icon
-                  name={tab.iconName}
-                  size={20}
-                  color={isActive ? colors.primaryDark : colors.textMuted}
-                />
-              </View>
-              <Text
-                style={[
-                  styles.tabLabel,
-                  isActive && styles.tabLabelActive,
-                ]}
-                numberOfLines={1}
-              >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+                <View
+                  style={[
+                    styles.tabIconContainer,
+                    isActive && styles.tabIconContainerActive,
+                  ]}
+                >
+                  <Icon
+                    name={tab.iconName}
+                    size={20}
+                    color={isActive ? colors.primaryDark : colors.textMuted}
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    isActive && styles.tabLabelActive,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
     </View>
   );
@@ -139,34 +141,44 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
   },
-  tabBar: {
+  bottomBarWrapper: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.md,
+    paddingTop: 6,
+  },
+  tabBarPill: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
     backgroundColor: colors.surface,
-    borderTopColor: colors.borderSubtle,
-    borderTopWidth: 1,
-    paddingTop: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    elevation: 8,
+    borderRadius: 36,
+    borderWidth: 1.5,
+    borderColor: '#CBD5E1',
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    elevation: 4,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xxs,
+    paddingVertical: 2,
   },
   tabIconContainer: {
-    width: 38,
-    height: 28,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: borderRadius.full,
+    borderRadius: 22,
+    overflow: 'hidden',
   },
   tabIconContainerActive: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: '#ECFDF5',
+    borderRadius: 22,
   },
   tabLabel: {
     ...typography.caption,
@@ -177,6 +189,6 @@ const styles = StyleSheet.create({
   },
   tabLabelActive: {
     color: colors.primaryDark,
-    fontWeight: '800',
+    fontWeight: '700',
   },
 });
