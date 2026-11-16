@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   ViewStyle,
 } from 'react-native';
@@ -44,8 +46,14 @@ export const Modal: React.FC<ModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoid}
+      >
         <View style={styles.overlay}>
+          <TouchableWithoutFeedback onPress={onClose}>
+            <View style={StyleSheet.absoluteFill} />
+          </TouchableWithoutFeedback>
           <View
             style={[styles.dialogContainer, style]}
             onStartShouldSetResponder={() => true}
@@ -76,7 +84,7 @@ export const Modal: React.FC<ModalProps> = ({
             {footer ? <View style={styles.footer}>{footer}</View> : null}
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </RNModal>
   );
 };
@@ -87,14 +95,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: spacing.md,
+  },
+  keyboardAvoid: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   dialogContainer: {
     width: '100%',
-    maxWidth: 420,
+    maxHeight: '100%',
     backgroundColor: colors.surface,
     borderRadius: borderRadius['2xl'],
-    padding: spacing.xl,
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
     ...shadows.lg,

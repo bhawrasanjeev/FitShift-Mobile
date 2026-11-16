@@ -32,6 +32,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
   const [activeStage, setActiveStage] = useState<number>(1);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [generationFailed, setGenerationFailed] = useState<boolean>(false);
+  const [isWakingUp, setIsWakingUp] = useState<boolean>(false);
 
   const stages = [
     { id: 1, title: 'Calculating BMR, TDEE & Macro Targets', desc: 'Mifflin-St Jeor calculation with activity multiplier' },
@@ -51,6 +52,17 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
       isMountedRef.current = false;
     };
   }, []);
+
+  // Show waking up hint if backend call takes more than 5s (Render cold start)
+  useEffect(() => {
+    if (generationFailed) return;
+    const timer = setTimeout(() => {
+      if (isMountedRef.current) {
+        setIsWakingUp(true);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [generationFailed, hasStarted]);
 
   useEffect(() => {
     Animated.loop(
@@ -123,7 +135,7 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
           title="Plan Generation Failed"
           message={
             error ||
-            'Could not connect to the FitShift backend. Please ensure the Express server is running on port 5001.'
+            'Could not connect to the FitShift backend. If the cloud server is waking up from idle on Render Free, please tap retry.'
           }
           onRetry={handleRetry}
         />
@@ -156,7 +168,9 @@ export const GeneratingPlanScreen: React.FC<GeneratingPlanScreenProps> = ({
       <View style={styles.statusCol}>
         <Text style={styles.title}>Constructing Your FitShift Plan</Text>
         <Text style={styles.subtitle}>
-          Applying Indian grocery economics and your personal timetable...
+          {isWakingUp
+            ? 'Contacting cloud engine (Render Free tier waking up)...'
+            : 'Applying Indian grocery economics and your personal timetable...'}
         </Text>
       </View>
 

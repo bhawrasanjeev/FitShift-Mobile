@@ -21,7 +21,66 @@
 | **Phase 8** | **AI Assistant & External Integrations** | **COMPLETED** | Nov 4, 2026 |
 | **Phase 9** | **Profile, Settings and Supporting Functionality** | **COMPLETED** | Nov 4, 2026 |
 | **Phase 10** | **Quality Assurance, UI Verification & Optimization** | **COMPLETED** | Nov 8, 2026 |
+| **Phase 10A** | **Production Backend Integration** | **COMPLETED** | Nov 9, 2026 |
 | **Phase 11** | Android APK Build and Demo Preparation | Ready | Next |
+
+---
+
+## Phase 10A: Production Backend Integration Report
+
+### Production Deployment Details
+- **Production Backend URL:** `https://fitshift-1mgj.onrender.com`
+- **Production Web Application:** `https://fit-shift.vercel.app`
+- **Hosting Platform:** Render Free Tier (Express.js + Gemini API)
+- **Local Development URL:** `http://10.0.2.2:5001` (Android Emulator loopback)
+- **Local Wi-Fi LAN URL:** `http://10.236.248.137:5001` (Physical device on local network)
+
+### How to Switch Between Production and Local Backends
+
+#### Option A: Centralized Code Setting (`src/services/api/config.ts`)
+Toggle the single `ACTIVE_API_TARGET` constant:
+```typescript
+export type ApiTarget = 'PRODUCTION' | 'LOCAL' | 'LAN';
+export const ACTIVE_API_TARGET: ApiTarget = 'PRODUCTION'; // Set to 'LOCAL' for emulator loopback
+```
+
+#### Option B: Dynamic In-App Developer Console
+1. From the Welcome Screen, tap **API Console**.
+2. Tap the desired quick preset pill:
+   - `[Production (Render)]` (`https://fitshift-1mgj.onrender.com`)
+   - `[Emulator (5001)]` (`http://10.0.2.2:5001`)
+   - `[Emulator (5000)]` (`http://10.0.2.2:5000`)
+   - `[Phone LAN (5001)]` (`http://10.236.248.137:5001`)
+3. Tap **Apply**. The selected base URL persists immediately in `AsyncStorage`.
+
+### Production API Endpoint Verification Results (100% PASS)
+
+| # | Endpoint | Method | Latency | Status | Production Response Summary |
+|---|---|---|---|---|---|
+| 1 | `/api/health` | GET | 768ms | **200 OK** | `{"success":true,"message":"FitShift API is running"}` |
+| 2 | `/api/data/status` | GET | 333ms | **200 OK** | Exercises: 876, Food Prices: 36, Staples: 36, Nutrition: 1014 |
+| 3 | `/api/nutrition/calculate` | POST | 370ms | **200 OK** | BMR: 1679 kcal, TDEE: 2602 kcal, Target: 2902 kcal, Protein: 119g |
+| 4 | `/api/diet/optimize` | POST | 453ms | **200 OK** | Feasible budget: ₹74/day, 4 meals, 6 whole foods, alternatives |
+| 5 | `/api/workouts/generate` | POST | 467ms | **200 OK** | 7-day split, 20 exercises, CDN images, reps/sets, alternatives |
+| 6 | `/api/ai/status` | GET | 320ms | **200 OK** | `{"configured":true,"provider":"gemini"}` |
+| 7 | `/api/ai/chat` | POST | 9048ms | **200 OK** | Server-side Gemini 2.5 Flash inference with plan context injected |
+| 8 | `LOCAL /storage` | AsyncStorage | 55ms | **200 OK** | Session and profile saved & restored from device storage |
+
+### Cold Start & Network UX Resilience
+- **Extended Request Timeout:** Default timeout configured to `35000ms` (35 seconds) to accommodate Render Free tier wake-up cycles without premature cancellation.
+- **Waking-Up Status Ticker:** `GeneratingPlanScreen` dynamically detects delays > 5 seconds and updates the status subtitle to inform the user: *"Contacting cloud engine (Render Free tier waking up)..."*.
+- **Informative Error Messaging:** When network timeouts or connection drops occur, error states provide specific guidance for Render cold starts and direct 1-tap retry buttons.
+- **Cache Preservation:** In accordance with the offline-first architecture, failed network calls never invalidate or clear existing cached workout/diet blueprints.
+
+### Quality Assurance & Build Gates
+- **TypeScript:** `npx tsc --noEmit` -> **0 errors**.
+- **ESLint:** `npm run lint` -> **0 errors**, 20 styling warnings.
+- **Android Gradle Debug Build:** `./gradlew assembleDebug` -> **BUILD SUCCESSFUL**.
+- **Emulator Verification:** Executed live on connected `emulator-5554`:
+  - Plan generation via 7-step onboarding against Render production backend.
+  - Dynamic workout environment switching between Home and Commercial Gym.
+  - Live AI Coach chat with plan context injection and real-time Gemini response.
+  - Cold restart persistence verified with complete plan restoration.
 
 ---
 
@@ -404,7 +463,43 @@
 
 ---
 
-## Phase 4: Authentication, Welcome Screen and User Onboarding Report
+## Phase 10B: Comprehensive Mobile Keyboard Avoidance & Input Visibility Fix
+
+### Problem Statement & Root Cause
+- **Reported Bug:** When opening the mobile soft keyboard to type in the AI Coach chat section (`AICoachTabScreen.tsx`) or other input areas (Personal Basics / Onboarding, Profile edit modals, API Console), the text input stayed positioned at the bottom under the keyboard, completely obstructing what the user was typing.
+- **Root Cause Analysis:**
+  1. In `android/gradle.properties`, React Native 0.88 enables `edgeToEdgeEnabled=true`. With Android 15 Edge-to-Edge display support, `WindowCompat.setDecorFitsSystemWindows(window, false)` prevents the Android OS decor view from automatically resizing on `adjustResize`.
+  2. In `AICoachTabScreen.tsx`, the `KeyboardAvoidingView` was configured with `behavior={Platform.OS === 'ios' ? 'padding' : undefined}`. When `behavior` is `undefined` on Android, React Native's `KeyboardAvoidingView` renders a static `<View>` with zero keyboard height adjustment.
+  3. Other screens containing text inputs (`OnboardingWizard.tsx`, `Modal.tsx` / `EditSectionModal.tsx`, and `ApiValidationConsole.tsx`) did not have responsive keyboard avoiding views configured, leading to dialog and input obstruction when the soft keyboard opened.
+
+### Solution & Changes Implemented
+1. **AI Coach Chat (`src/screens/Dashboard/AICoachTabScreen.tsx`):**
+   - Configured `KeyboardAvoidingView` with `behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`.
+   - Added automatic keyboard show listener (`Keyboard.addListener('keyboardDidShow')`) to smoothly scroll chat messages to the bottom whenever the keyboard opens.
+   - Added `keyboardShouldPersistTaps="handled"` and `keyboardDismissMode="on-drag"` to the messages `FlatList` so users can dismiss the keyboard by dragging and interact with suggestions seamlessly.
+2. **Interactive Modals & Profile (`src/components/interactive/Modal.tsx` & `src/components/profile/EditSectionModal.tsx`):**
+   - Wrapped `RNModal` overlay with `KeyboardAvoidingView` (`behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`) with `{ flex: 1, width: '100%', height: '100%' }`.
+   - Centered dialogs automatically in the visible viewport above the soft keyboard.
+   - Updated `EditSectionModal` with `flexShrink: 1` and `keyboardShouldPersistTaps="handled"`.
+3. **Onboarding Questionnaire (`src/components/onboarding/OnboardingWizard.tsx`):**
+   - Wrapped master wizard container in `KeyboardAvoidingView` (`behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`).
+   - The bottom navigation bar ("Cancel" / "Back" / "Continue") dynamically elevates directly above the soft keyboard, keeping all inputs in view.
+4. **Developer API Console (`src/screens/ApiValidationConsole.tsx`):**
+   - Wrapped ScrollView in `KeyboardAvoidingView` (`behavior={Platform.OS === 'ios' ? 'padding' : 'height'}`) with `keyboardShouldPersistTaps="handled"`.
+
+### Verification & Testing
+- **Emulator Verification (`emulator-5554`):**
+  - **AI Coach:** Tapped chat input -> keyboard popped up -> EditText moved from `[60,1987][920,2077]` to `[60,1393][920,1483]` directly above the keyboard. Typed query: *"What are high protein vegetarian sources"*; text remained 100% visible with cursor and active green send button. Tapped send; response returned and rendered cleanly.
+  - **Profile Edit Modal:** Opened Personal Basics Edit -> tapped Weight EditText -> modal smoothly elevated from `[450,1604]` to `[450,1271]`, completely visible above keyboard.
+  - **Onboarding Step 1:** Tapped Weight -> Cancel/Continue buttons elevated from `[606,2278]` to `[606,1396]`.
+  - **Keyboard Dismissal:** On pressing Back / dismissing keyboard, all inputs and bottom navigation capsule smoothly returned to resting positions with zero jitter.
+- **Code Quality:**
+  - `npx tsc --noEmit` -> **0 errors**.
+  - `npm run lint` -> **0 errors**.
+  - `./gradlew assembleDebug` -> **BUILD SUCCESSFUL**.
+  - Installed & tested fresh APK on device.
+
+---
 
 ### Completed
 - **FitShift Welcome Screen (`src/screens/WelcomeScreen.tsx`):**

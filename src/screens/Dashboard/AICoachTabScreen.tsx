@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   TouchableOpacity,
   Alert,
@@ -75,6 +76,21 @@ export const AICoachTabScreen: React.FC = () => {
     }, 100);
   };
 
+  // Auto-scroll messages into view when soft keyboard opens
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => {
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    );
+    return () => {
+      showSub.remove();
+    };
+  }, []);
+
   const handleSendMessage = async (text: string): Promise<boolean> => {
     if (!text.trim() || isGenerating) return false;
 
@@ -134,7 +150,7 @@ export const AICoachTabScreen: React.FC = () => {
       const errMsg =
         err instanceof Error
           ? err.message
-          : 'FitShift AI Coach is temporarily unreachable. Please ensure the Express server is running.';
+          : 'FitShift AI Coach is temporarily unreachable. Please check backend connection.';
 
       setErrorMessage(errMsg);
 
@@ -207,7 +223,7 @@ export const AICoachTabScreen: React.FC = () => {
   return (
     <KeyboardAvoidingView
       style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* AI Coach Header */}
@@ -237,6 +253,8 @@ export const AICoachTabScreen: React.FC = () => {
           messages.length === 0 && styles.messagesContentEmpty,
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         ListEmptyComponent={
           <ChatEmptyState
             status={aiStatus}

@@ -20,7 +20,7 @@ export interface RequestOptions extends RequestInit {
  * Executes a network request with timeout support, fallback port resolution, and normalized errors.
  */
 export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { timeoutMs = 12000, ...fetchOptions } = options;
+  const { timeoutMs = 35000, ...fetchOptions } = options;
   await apiConfig.init();
   const baseUrl = apiConfig.getBaseUrl();
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -61,8 +61,13 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
       clearTimeout(timer);
       if (err instanceof ApiError) throw err;
       if (err instanceof Error && err.name === 'AbortError') {
+        const isRender = baseUrl.includes('onrender.com');
+        const timeoutSec = Math.round(timeout / 1000);
+        const coldStartHint = isRender
+          ? ' (The production server on Render may be waking up from sleep. Please retry in a moment.)'
+          : ' Please check if the FitShift backend is running.';
         throw new ApiError(
-          `Request timed out after ${Math.round(timeout / 1000)}s. Please check if the FitShift backend is running.`,
+          `Request timed out after ${timeoutSec}s.${coldStartHint}`,
           408
         );
       }
@@ -92,9 +97,13 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
       }
     }
 
+    const isRender = baseUrl.includes('onrender.com');
+    const extraHint = isRender
+      ? ' (The server may be waking up from cold sleep on Render. Please tap retry.)'
+      : '';
     const msg = initialErr instanceof Error ? initialErr.message : 'Network request failed';
     throw new ApiError(
-      `Cannot connect to FitShift backend at ${baseUrl}. (${msg})`,
+      `Cannot connect to FitShift backend at ${baseUrl}. (${msg})${extraHint}`,
       0
     );
   }

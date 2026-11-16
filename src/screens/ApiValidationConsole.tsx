@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
@@ -197,7 +206,8 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
             durationMinutes: 45,
           });
           const duration = Date.now() - startTime;
-          const preview = res.reply.length > 100 ? `${res.reply.slice(0, 100)}...` : res.reply;
+          const replyText = res.reply || res.response || '';
+          const preview = replyText.length > 100 ? `${replyText.slice(0, 100)}...` : replyText;
           updateTestStatus(testKey, 'success', duration, preview);
           break;
         }
@@ -287,7 +297,15 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
         }
       />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
         {/* Environment Configuration Card */}
         <Card style={styles.card} padding="lg">
           <SectionHeader
@@ -306,12 +324,12 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                setCustomInputUrl('http://10.0.2.2:5000');
-                apiConfig.setBaseUrl('http://10.0.2.2:5000').then(() => setActiveBaseUrl('http://10.0.2.2:5000'));
+                setCustomInputUrl('https://fitshift-1mgj.onrender.com');
+                apiConfig.setBaseUrl('https://fitshift-1mgj.onrender.com').then(() => setActiveBaseUrl('https://fitshift-1mgj.onrender.com'));
               }}
-              style={styles.presetBtn}
+              style={[styles.presetBtn, { backgroundColor: '#ECFDF5', borderColor: '#10B981' }]}
             >
-              <Text style={styles.presetBtnText}>Emulator (5000)</Text>
+              <Text style={[styles.presetBtnText, { color: '#047857', fontWeight: '700' }]}>Production (Render)</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -328,12 +346,23 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                setCustomInputUrl('http://127.0.0.1:5001');
-                apiConfig.setBaseUrl('http://127.0.0.1:5001').then(() => setActiveBaseUrl('http://127.0.0.1:5001'));
+                setCustomInputUrl('http://10.0.2.2:5000');
+                apiConfig.setBaseUrl('http://10.0.2.2:5000').then(() => setActiveBaseUrl('http://10.0.2.2:5000'));
               }}
               style={styles.presetBtn}
             >
-              <Text style={styles.presetBtnText}>Direct (5001)</Text>
+              <Text style={styles.presetBtnText}>Emulator (5000)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setCustomInputUrl('http://10.236.248.137:5001');
+                apiConfig.setBaseUrl('http://10.236.248.137:5001').then(() => setActiveBaseUrl('http://10.236.248.137:5001'));
+              }}
+              style={styles.presetBtn}
+            >
+              <Text style={styles.presetBtnText}>Phone LAN (5001)</Text>
             </TouchableOpacity>
           </View>
 
@@ -472,6 +501,7 @@ export const ApiValidationConsole: React.FC<ApiValidationConsoleProps> = ({ onOp
           </View>
         </Card>
       </ScrollView>
+    </KeyboardAvoidingView>
 
       {/* Toast Notification Container */}
       <Toast

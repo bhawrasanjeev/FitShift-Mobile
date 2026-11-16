@@ -1014,6 +1014,7 @@ export const EditSectionModal: React.FC<EditSectionModalProps> = ({
         style={styles.scrollBody}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {errorMessage ? (
           <View style={styles.errorBox}>
@@ -1035,7 +1036,8 @@ export const EditSectionModal: React.FC<EditSectionModalProps> = ({
 
 const styles = StyleSheet.create({
   scrollBody: {
-    maxHeight: 520,
+    maxHeight: 460,
+    flexShrink: 1,
   },
   scrollContent: {
     paddingBottom: spacing.lg,

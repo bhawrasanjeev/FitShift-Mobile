@@ -3,6 +3,8 @@ import {
   View,
   Text,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   BackHandler,
 } from 'react-native';
@@ -165,7 +167,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* Wizard Progress Header */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, spacing.md) }]}>
         <View style={styles.headerMetaRow}>
@@ -316,7 +321,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           />
         )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
