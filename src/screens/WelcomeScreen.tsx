@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../components/common/Button';
@@ -28,8 +27,8 @@ export interface WelcomeScreenProps {
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onStartOnboarding,
   onViewActivePlan,
-  onOpenShowcase,
-  onOpenApiConsole,
+  onOpenShowcase: _onOpenShowcase,
+  onOpenApiConsole: _onOpenApiConsole,
 }) => {
   const { hasPlan, plan } = usePlan();
   const insets = useSafeAreaInsets();
@@ -137,33 +136,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </View>
         )}
       </View>
-
-      {/* Developer / Dev Navigation (if props provided) */}
-      {(onOpenShowcase || onOpenApiConsole) && (
-        <View style={styles.devToolsRow}>
-          {onOpenShowcase && (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onOpenShowcase}
-              style={styles.devLink}
-            >
-              <Text style={styles.devLinkText}>Design System</Text>
-            </TouchableOpacity>
-          )}
-          {onOpenShowcase && onOpenApiConsole && (
-            <Text style={styles.devDot}>•</Text>
-          )}
-          {onOpenApiConsole && (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onOpenApiConsole}
-              style={styles.devLink}
-            >
-              <Text style={styles.devLinkText}>API Console</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
     </ScrollView>
   );
 };

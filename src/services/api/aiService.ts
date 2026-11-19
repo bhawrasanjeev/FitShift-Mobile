@@ -21,7 +21,7 @@ export const aiService = {
     const res = await apiClient.post<{ success: boolean; data: AIChatResponse }>(
       '/api/ai/chat',
       { query, context },
-      { timeoutMs: 30000 } // Extended timeout for LLM inferences
+      { timeoutMs: 60000 } // Extended timeout for LLM inferences (allows cold Render wake-ups)
     );
     return res.data;
   },

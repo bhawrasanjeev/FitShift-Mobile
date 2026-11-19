@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SuggestedPrompts } from './SuggestedPrompts';
+import { Logo } from '../common/Logo';
 import { AIStatusResponse } from '../../types';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
-import { borderRadius } from '../../theme/borderRadius';
 
 export interface ChatEmptyStateProps {
   status: AIStatusResponse | null;
@@ -20,8 +20,8 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.heroBox}>
-        <View style={styles.avatarGlow}>
-          <Text style={styles.heroAiText}>AI</Text>
+        <View style={styles.heroLogoBox}>
+          <Logo size={52} rounded />
         </View>
 
         <Text style={styles.heroTitle}>Ask anything about your routine</Text>
@@ -48,22 +48,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
   },
-  avatarGlow: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.xl,
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1.5,
-    borderColor: '#A7F3D0',
+  heroLogoBox: {
+    marginBottom: spacing.sm + 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  heroAiText: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: colors.primaryDark,
-    letterSpacing: 0.5,
   },
   heroTitle: {
     ...typography.h3,

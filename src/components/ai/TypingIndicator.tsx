@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
+import { Logo } from '../common/Logo';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -48,8 +49,8 @@ export const TypingIndicator: React.FC = () => {
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>AI</Text>
+      <View style={styles.logoBox}>
+        <Logo size={28} rounded />
       </View>
 
       <View style={styles.bubble}>
@@ -71,22 +72,8 @@ const styles = StyleSheet.create({
     marginVertical: spacing.xs,
     paddingHorizontal: spacing.md,
   },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoBox: {
     marginRight: spacing.xs + 2,
-  },
-  avatarText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: colors.primaryDark,
-    letterSpacing: 0.3,
   },
   bubble: {
     flexDirection: 'row',

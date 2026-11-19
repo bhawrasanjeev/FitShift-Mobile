@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../common/Icon';
+import { Logo } from '../common/Logo';
 import { AIStatusResponse } from '../../types';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
@@ -30,8 +31,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     <View style={[styles.container, { paddingTop: topInset + spacing.sm }]}>
       <View style={styles.topRow}>
         <View style={styles.titleGroup}>
-          <View style={styles.avatarBox}>
-            <Text style={styles.avatarText}>AI</Text>
+          <View style={styles.logoWrapper}>
+            <Logo size={36} rounded />
           </View>
           <View style={styles.titleTextCol}>
             <View style={styles.nameRow}>
@@ -89,20 +90,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  avatarBox: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoWrapper: {
     marginRight: spacing.sm,
-  },
-  avatarText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
   },
   titleTextCol: {
     flex: 1,

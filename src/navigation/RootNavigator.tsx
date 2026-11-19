@@ -107,8 +107,6 @@ export const RootNavigator: React.FC = () => {
         <WelcomeScreen
           onStartOnboarding={handleStartOnboarding}
           onViewActivePlan={() => navigateTo('main')}
-          onOpenShowcase={() => navigateTo('showcase')}
-          onOpenApiConsole={() => navigateTo('api_console')}
         />
       )}
 

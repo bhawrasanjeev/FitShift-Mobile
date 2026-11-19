@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Share } from 'react-native';
 import { ChatMessage } from '../../types';
 import { Badge } from '../common/Badge';
 import { Icon } from '../common/Icon';
+import { Logo } from '../common/Logo';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
@@ -126,8 +127,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   // Assistant / Coach Message
   return (
     <View style={styles.coachWrapper}>
-      <View style={styles.coachAvatar}>
-        <Text style={styles.coachAvatarText}>AI</Text>
+      <View style={styles.coachLogoWrapper}>
+        <Logo size={28} rounded />
       </View>
 
       <View style={[styles.coachBubble, message.error && styles.coachBubbleError]}>
@@ -254,23 +255,9 @@ const styles = StyleSheet.create({
     marginVertical: spacing.xs,
     paddingHorizontal: spacing.md,
   },
-  coachAvatar: {
-    width: 30,
-    height: 30,
-    borderRadius: borderRadius.md,
-    backgroundColor: '#ECFDF5',
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    alignItems: 'center',
-    justifyContent: 'center',
+  coachLogoWrapper: {
     marginRight: spacing.xs + 2,
     marginTop: 2,
-  },
-  coachAvatarText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: colors.primaryDark,
-    letterSpacing: 0.3,
   },
   coachBubble: {
     flex: 1,
